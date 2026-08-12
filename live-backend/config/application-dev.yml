@@ -1,0 +1,46 @@
+# 服务器配置
+server:
+  port: 8888
+
+spring:
+  # 数据源配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://218.244.138.75:3306/qingwen_live_backend_test?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: admin12345
+
+  mybatis-plus:
+    configuration:
+      map-underscore-to-camel-case: true
+      log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    global-config:
+      db-config:
+        id-type: auto
+
+  # Redis 配置
+  redis:
+    # 单机模式
+    host: 218.244.138.75
+    port: 6379
+    password: admin12345     # 如果没有密码就删除这行
+    database: 0              # 数据库索引（0-15）
+    timeout: 5000            # 连接超时时间（毫秒）
+
+    # Lettuce 连接池配置
+    lettuce:
+      pool:
+        max-active: 200      # 连接池最大连接数
+        max-idle: 20         # 连接池最大空闲连接数
+        min-idle: 5          # 连接池最小空闲连接数
+        max-wait: 3000       # 连接池最大阻塞等待时间（毫秒）
+      shutdown-timeout: 100  # 关闭超时时间（毫秒）
+
+cache:
+  keyNameSpace: Qingwen
+  defaultKeyVersion: v1
+
+jwt:
+  secret: myVeryLongSecretKeyForJWT123456789012345678901234567890
+  access-token-timeout: 7200 # 2小时（秒）
+  refresh-token-timeout: 604800  # 7天（秒）
