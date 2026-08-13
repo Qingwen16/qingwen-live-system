@@ -1,7 +1,8 @@
 package com.wen.intercepter;
 
-import com.wen.module.auth.service.CacheService;
+import com.wen.service.CacheService;
 import com.wen.common.generator.JwtTokenGenerator;
+import com.wen.utils.LoginUser;
 import com.wen.utils.UserInfoContext;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 用户认证拦截器
- * 解析 Token，设置用户上下文（游客或登录用户）
+ * 解析 Token，设置登录用户上下文
  */
 @Component
 @Slf4j
@@ -60,8 +61,10 @@ public class LoginInterceptor implements HandlerInterceptor {
             return false;
         }
 
-        // 5. 所有检查通过，将用户信息存入 ThreadLocal，供后续业务使用
-        // 例如: UserContextHolder.setUser(new AuthenticatedUser(userId, claims.get("role", String.class)));
+        // 5. 所有检查通过，将用户信息写入 ThreadLocal，供后续业务鉴权使用
+        Integer role = claims.get("role", Integer.class);
+        Integer clientType = claims.get("clientType", Integer.class);
+        UserInfoContext.setLoginUser(new LoginUser(userId, role, clientType));
 
         return true;
     }

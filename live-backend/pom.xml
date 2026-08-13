@@ -131,7 +131,7 @@
                             <!--生成的manifest中的classpath的前缀，因为要把第三方jar放到lib目录下，所以classpath前缀是lib/-->
                             <classpathPrefix>lib/</classpathPrefix>
                             <!--应用的main class -->
-                            <mainClass>cn.com.wind.server.Application</mainClass>
+                            <mainClass>com.wen.Application</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

@@ -1,6 +1,6 @@
 package com.wen.common.generator;
 
-import com.wen.module.auth.domain.vo.TokenDto;
+import com.wen.model.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.Data;
@@ -18,7 +18,7 @@ import java.util.UUID;
 
 /**
  * JWT Token 生成器 - 单令牌模式
- * 
+ *
  * @author : rjw
  * @date : 2026-03-18
  */
@@ -38,13 +38,19 @@ public class JwtTokenGenerator {
 
     /**
      * 生成 Token
+     *
+     * @param userId     用户 ID
+     * @param role       角色类型
+     * @param clientType 客户端类型
      */
-    public TokenDto generateToken(Long userId) {
+    public TokenDto generateToken(Long userId, Integer role, Integer clientType) {
         SecretKey key = createSecretKey();
 
-        // 生成 Token，包含 userId 和唯一的 JTI
+        // 生成 Token，包含 userId、角色、客户端类型和唯一的 JTI
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
+        claims.put("role", role);
+        claims.put("clientType", clientType);
 
         String token = Jwts.builder()
                 .claims(claims)

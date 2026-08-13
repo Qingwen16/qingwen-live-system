@@ -1,41 +1,60 @@
 package com.wen.utils;
 
-
-import com.wen.module.user.domain.vo.UserInfoDto;
-
 /**
  * 用户上下文工具类
- * 使用 ThreadLocal 存储当前请求的用户信息
+ * 使用 ThreadLocal 存储当前请求的登录用户信息
+ * 系统强制登录，必须通过手机号登录后才能访问
+ *
+ * @author jwruan
  */
 public class UserInfoContext {
 
     /**
-     * 当前登录用户（null 表示游客）
+     * 当前登录用户
      */
-    private static final ThreadLocal<UserInfoDto> CURRENT_USER = new ThreadLocal<>();
+    private static final ThreadLocal<LoginUser> CURRENT_USER = new ThreadLocal<>();
 
     /**
      * 设置当前登录用户
-     * @param userInfo 用户
+     * @param loginUser 登录用户
      */
-    public static void setUserInfo(UserInfoDto userInfo) {
-        CURRENT_USER.set(userInfo);
+    public static void setLoginUser(LoginUser loginUser) {
+        CURRENT_USER.set(loginUser);
     }
 
     /**
      * 获取当前登录用户
-     * @return 用户，如果是游客返回 null
+     * @return 登录用户
      */
-    public static UserInfoDto getUserInfo() {
+    public static LoginUser getLoginUser() {
         return CURRENT_USER.get();
     }
 
     /**
-     * 判断是否是游客
-     * @return true-游客，false-已登录用户
+     * 获取当前登录用户 ID
+     * @return 用户 ID
      */
-    public static boolean isGuest() {
-        return CURRENT_USER.get() == null;
+    public static Long getUserId() {
+        LoginUser user = CURRENT_USER.get();
+        return user == null ? null : user.getUserId();
+    }
+
+    /**
+     * 获取当前登录用户角色
+     * @return 角色类型
+     */
+    public static Integer getRole() {
+        LoginUser user = CURRENT_USER.get();
+        return user == null ? null : user.getRole();
+    }
+
+    /**
+     * 获取当前登录客户端类型
+     * @return 客户端类型
+     */
+    public static Integer getClientType() {
+        LoginUser user = CURRENT_USER.get();
+        return user == null ? null : user.getClientType();
     }
 
     /**

@@ -1,0 +1,44 @@
+package com.wen.common.response;
+
+import lombok.Data;
+
+import java.util.List;
+
+/**
+ * 通用分页返回对象
+ *
+ * @author : rjw
+ * @date : 2026-04-09
+ */
+@Data
+public class PageResult<T> {
+
+    /**
+     * 当前页数据
+     */
+    private List<T> records;
+
+    /**
+     * 总记录数
+     */
+    private long total;
+
+    /**
+     * 当前页码
+     */
+    private long pageNum;
+
+    /**
+     * 每页大小
+     */
+    private long pageSize;
+
+    public static <T> PageResult<T> of(List<T> records, long total, long pageNum, long pageSize) {
+        PageResult<T> result = new PageResult<>();
+        result.setRecords(records);
+        result.setTotal(total);
+        result.setPageNum(pageNum);
+        result.setPageSize(pageSize);
+        return result;
+    }
+}

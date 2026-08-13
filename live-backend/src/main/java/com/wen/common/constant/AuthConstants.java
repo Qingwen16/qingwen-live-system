@@ -17,9 +17,9 @@ public class AuthConstants {
     public static final int SMS_CODE_LENGTH = 6;
 
     /**
-     * 过期时间
+     * 过期时间（秒）
      */
-    public static final int SMS_CODE_EXPIRE_MINUTES = 5 * 60;
+    public static final int SMS_CODE_EXPIRE_SECONDS = 5 * 60;
 
     /**
      * 最大重试次数
