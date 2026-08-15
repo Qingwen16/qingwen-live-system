@@ -5,8 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * @author : rjw
- * @date : 2026-04-08
+ * 新增商品请求
  */
 @Data
 public class GoodCreateRequest {
@@ -29,7 +28,7 @@ public class GoodCreateRequest {
     /**
      * 库存数量
      */
-    private Integer stock;
+    private Integer stockCount;
     /**
      * 货物单位
      */
@@ -43,13 +42,9 @@ public class GoodCreateRequest {
      */
     private String imageUrl;
     /**
-     * 供应商ID
+     * 关联直播间 ID（可空）
      */
-    private Long supplierId;
-    /**
-     * 供应商名称
-     */
-    private String supplierName;
+    private Long roomId;
     /**
      * 备注
      */

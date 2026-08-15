@@ -29,14 +29,4 @@ public class RoomQueryRequest {
      * 是否推荐 0-否 1-是
      */
     private Integer isRecommend;
-
-    /**
-     * 当前页码，从 1 开始
-     */
-    private Integer pageNum = 1;
-
-    /**
-     * 每页条数
-     */
-    private Integer pageSize = 10;
 }

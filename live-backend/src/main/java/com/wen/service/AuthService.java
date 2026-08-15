@@ -2,7 +2,6 @@ package com.wen.service;
 
 import com.wen.model.vo.PhoneLoginRequest;
 import com.wen.model.vo.SmsCodeRequest;
-import com.wen.model.dto.TokenDto;
 import com.wen.model.vo.UserInfoResponse;
 import com.wen.model.vo.WechatLoginRequest;
 
@@ -31,6 +30,6 @@ public interface AuthService {
     /**
      * 用户登出
      */
-    void logout(TokenDto tokenDto);
+    void logout(String token);
 
 }

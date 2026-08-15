@@ -57,11 +57,6 @@ public class AddressRequest {
     private String postalCode;
 
     /**
-     * 地址标签：1-家，2-公司，3-学校，4-其他
-     */
-    private Integer tag;
-
-    /**
      * 是否默认地址：0-否，1-是
      */
     private Integer isDefault;

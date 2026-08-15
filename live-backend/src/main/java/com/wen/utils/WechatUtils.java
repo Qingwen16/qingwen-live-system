@@ -35,7 +35,6 @@ public class WechatUtils {
         try {
             HttpResponse response = HttpRequest.get(url).execute();
             String body = response.body();
-            log.info("微信 jscode2session 响应: {}", body);
 
             JSONObject result = JSONUtil.parseObj(body);
 
@@ -106,7 +105,6 @@ public class WechatUtils {
                     .execute();
 
             String body = response.body();
-            log.info("微信 getPhoneNumber 响应: {}", body);
 
             JSONObject result = JSONUtil.parseObj(body);
 

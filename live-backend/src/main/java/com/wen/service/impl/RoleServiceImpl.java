@@ -95,7 +95,7 @@ public class RoleServiceImpl implements RoleService {
                 return "设置角色的验证码有误";
             }
         }
-        if (existUserRole(phone)) {
+        if (isRoleNotExist(phone)) {
             return "未查询该用户角色，请检验手机号";
         }
         LambdaUpdateWrapper<RoleEntity> wrapper = new LambdaUpdateWrapper<>();
@@ -107,7 +107,7 @@ public class RoleServiceImpl implements RoleService {
         return "用户角色修改成功";
     }
 
-    private boolean existUserRole(String phone) {
+    private boolean isRoleNotExist(String phone) {
         LambdaQueryWrapper<RoleEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(RoleEntity::getPhone, phone);
         Long count = roleMapper.selectCount(wrapper);

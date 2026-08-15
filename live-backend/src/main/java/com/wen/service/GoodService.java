@@ -1,9 +1,7 @@
 package com.wen.service;
 
-import com.wen.model.vo.GoodCreateRequest;
 import com.wen.model.dto.GoodDto;
-import com.wen.model.vo.GoodUpdateRequest;
-import com.wen.model.entity.GoodEntity;
+import com.wen.model.vo.*;
 
 import java.util.List;
 
@@ -14,37 +12,43 @@ import java.util.List;
 public interface GoodService {
 
     /**
-     * 新增商品
+     * 新增商品（默认未上架）
      */
-    String createGood(GoodCreateRequest request);
+    Long createGood(GoodCreateRequest request);
 
     /**
      * 修改商品
      */
-    String updateGood(GoodUpdateRequest request);
+    void updateGood(GoodUpdateRequest request);
 
     /**
-     * 删除商品
+     * 删除商品（软删除）
      */
-    String deleteGood(Long goodId);
+    void deleteGood(GoodIdRequest request);
 
     /**
-     * 获取所有商品
+     * 查询商品列表（全量，支持筛选）
      */
-    GoodEntity queryGoodById(Long goodId);
+    List<GoodDto> queryGoods(GoodQueryRequest request);
 
     /**
-     * 获取所有商品
+     * 查询商品列表（全量，支持筛选）
      */
-    List<GoodDto> queryTotalGoods();
+    List<GoodDto> queryAppGoods();
 
     /**
-     * 获取所有上架商品列表
+     * 查询直播间已上架且库存充足的商品（用户端）
      */
-    List<GoodDto> queryTotalListedGoods();
+    List<GoodDto> queryRoomGoods(RoomIdRequest request);
 
     /**
-     * 扣减库存
+     * 上架商品
      */
-    boolean reduceGoodStock(Long goodId, Integer quantity);
+    void onShelf(GoodIdRequest goodId);
+
+    /**
+     * 下架商品
+     */
+    void offShelf(GoodIdRequest goodId);
+
 }

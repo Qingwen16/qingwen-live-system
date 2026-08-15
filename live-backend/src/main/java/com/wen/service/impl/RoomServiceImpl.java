@@ -4,14 +4,14 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.wen.common.enums.DeleteEnum;
 import com.wen.common.enums.RoomStatus;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.mapper.RoomMapper;
 import com.wen.model.entity.RoomEntity;
 import com.wen.model.dto.RoomDto;
+import com.wen.model.vo.RoomIdRequest;
 import com.wen.model.vo.RoomQueryRequest;
 import com.wen.model.vo.RoomRequest;
 import com.wen.service.RoomService;
@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -99,11 +100,51 @@ public class RoomServiceImpl implements RoomService {
         roomMapper.update(null, wrapper);
 
         log.info("直播间 [{}] 更新成功", request.getId());
-        return getRoomInfo(request.getId());
+        RoomIdRequest roomIdRequest = new RoomIdRequest();
+        roomIdRequest.setRoomId(request.getId());
+        return getRoomInfo(roomIdRequest);
     }
 
     @Override
-    public void closeRoom(Long roomId) {
+    public RoomDto deleteRoom(RoomRequest request) {
+        if (request.getId() == null) {
+            throw new BusinessException("直播间ID不能为空");
+        }
+        RoomEntity room = getExistRoom(request.getId());
+        checkOwnership(room);
+
+        roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
+                .eq(RoomEntity::getId, request.getId())
+                .set(RoomEntity::getDeleted, DeleteEnum.DELETED.getCode())
+                .set(RoomEntity::getUpdateTime, System.currentTimeMillis()));
+        log.info("直播间 [{}] 已删除", request.getId());
+        return toDto(room);
+    }
+
+    @Override
+    public void openRoom(RoomIdRequest request) {
+        Long roomId = request.getRoomId();
+        if (roomId == null) {
+            throw new BusinessException("直播间ID不能为空");
+        }
+        RoomEntity room = getExistRoom(roomId);
+        checkOwnership(room);
+        if (RoomStatus.LIVING.getCode() == room.getStatus()) {
+            throw new BusinessException("直播间已开播");
+        }
+
+        roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
+                .eq(RoomEntity::getId, roomId)
+                .set(RoomEntity::getStatus, RoomStatus.LIVING.getCode())
+                .set(RoomEntity::getStartTime, System.currentTimeMillis())
+                .set(RoomEntity::getUpdateTime, System.currentTimeMillis()));
+
+        log.info("直播间 [{}] 已开播", roomId);
+    }
+
+    @Override
+    public void closeRoom(RoomIdRequest request) {
+        Long roomId = request.getRoomId();
         if (roomId == null) {
             throw new BusinessException("直播间ID不能为空");
         }
@@ -120,28 +161,26 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public IPage<RoomDto> getRoomList(RoomQueryRequest request) {
-        int pageNum = request.getPageNum() == null || request.getPageNum() < 1 ? 1 : request.getPageNum();
-        int pageSize = request.getPageSize() == null || request.getPageSize() < 1 ? 10 : request.getPageSize();
-
+    public List<RoomDto> getRoomList(RoomQueryRequest request) {
         LambdaQueryWrapper<RoomEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(StrUtil.isNotEmpty(request.getTitle()), RoomEntity::getTitle, request.getTitle())
+        wrapper.eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode())
+                .like(StrUtil.isNotEmpty(request.getTitle()), RoomEntity::getTitle, request.getTitle())
                 .eq(request.getStatus() != null, RoomEntity::getStatus, request.getStatus())
                 .eq(request.getCategoryId() != null, RoomEntity::getCategoryId, request.getCategoryId())
                 .eq(request.getIsRecommend() != null, RoomEntity::getIsRecommend, request.getIsRecommend())
                 .orderByDesc(RoomEntity::getCreateTime);
 
-        IPage<RoomEntity> roomPage = roomMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
-        log.info("查询直播间列表: total={}, size={}", roomPage.getTotal(), roomPage.getRecords().size());
-        return roomPage.convert(this::toDto);
+        List<RoomEntity> rooms = roomMapper.selectList(wrapper);
+        log.info("查询直播间列表: size={}", rooms.size());
+        return rooms.stream().map(this::toDto).toList();
     }
 
     @Override
-    public RoomDto getRoomInfo(Long roomId) {
-        if (roomId == null) {
+    public RoomDto getRoomInfo(RoomIdRequest request) {
+        if (request.getRoomId() == null) {
             throw new BusinessException("直播间ID不能为空");
         }
-        return toDto(getExistRoom(roomId));
+        return toDto(getExistRoom(request.getRoomId()));
     }
 
     /**
@@ -149,7 +188,8 @@ public class RoomServiceImpl implements RoomService {
      */
     private RoomEntity getExistRoom(Long roomId) {
         RoomEntity room = roomMapper.selectOne(new LambdaQueryWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, roomId));
+                .eq(RoomEntity::getId, roomId)
+                .eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (room == null) {
             throw new BusinessException("直播间不存在");
         }

@@ -3,6 +3,8 @@ package com.wen.common.generator;
 
 import com.wen.common.constant.AuthConstants;
 
+import java.security.SecureRandom;
+
 /**
  * @author : rjw
  * @date : 2026-03-18
@@ -10,10 +12,12 @@ import com.wen.common.constant.AuthConstants;
  */
 public class SmsCodeGenerator {
 
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     public static String generateCode() {
         StringBuilder code = new StringBuilder();
         for (int i = 0; i < AuthConstants.SMS_CODE_LENGTH; i++) {
-            code.append((int) (Math.random() * 10));
+            code.append(RANDOM.nextInt(10));
         }
         return code.toString();
     }

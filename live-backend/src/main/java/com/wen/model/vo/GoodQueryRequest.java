@@ -3,20 +3,23 @@ package com.wen.model.vo;
 import lombok.Data;
 
 /**
- * @author : rjw
- * @date : 2026-04-09
+ * 商品分页查询请求
  */
 @Data
 public class GoodQueryRequest {
 
     /**
-     * 货物编号
-     */
-    private String number;
-
-    /**
-     * 货物名称
+     * 货物名称（模糊）
      */
     private String name;
 
+    /**
+     * 货物状态：0-已下架，1-已上架，2-缺货
+     */
+    private Integer status;
+
+    /**
+     * 关联直播间 ID
+     */
+    private Long roomId;
 }

@@ -1,9 +1,11 @@
 package com.wen.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.wen.model.dto.RoomDto;
+import com.wen.model.vo.RoomIdRequest;
 import com.wen.model.vo.RoomQueryRequest;
 import com.wen.model.vo.RoomRequest;
+
+import java.util.List;
 
 /**
  * 直播间服务接口
@@ -23,17 +25,27 @@ public interface RoomService {
     RoomDto updateRoom(RoomRequest request);
 
     /**
-     * 关闭直播间（主播关闭自己的直播间，管理员可关闭任意直播间）
+     * 删除直播间（主播只能删除自己的直播间）
      */
-    void closeRoom(Long roomId);
+    RoomDto deleteRoom(RoomRequest request);
 
     /**
-     * 分页查询直播间列表
+     * 开启直播间（主播开启自己的直播间，管理员可开启任意直播间）
      */
-    IPage<RoomDto> getRoomList(RoomQueryRequest request);
+    void openRoom(RoomIdRequest request);
+
+    /**
+     * 关闭直播间（主播关闭自己的直播间，管理员可关闭任意直播间）
+     */
+    void closeRoom(RoomIdRequest request);
+
+    /**
+     * 查询直播间列表（全量）
+     */
+    List<RoomDto> getRoomList(RoomQueryRequest request);
 
     /**
      * 查询直播间详情
      */
-    RoomDto getRoomInfo(Long roomId);
+    RoomDto getRoomInfo(RoomIdRequest request);
 }

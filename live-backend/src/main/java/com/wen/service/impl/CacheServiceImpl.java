@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.TimeUnit;
+
 /**
  * 缓存服务实现类
  *
@@ -50,7 +52,7 @@ public class CacheServiceImpl implements CacheService {
         String codeKey = cacheConfig.getKeyPhoneSmsCode(phone);
         redisTemplate.opsForValue().set(codeKey, code, AuthConstants.SMS_CODE_EXPIRE_SECONDS,
                 cacheConfig.getDefaultTimeUnit());
-        log.info("保存短信验证码缓存: phone={}, type={}", phone, code);
+        log.info("保存短信验证码缓存: phone={}", phone);
     }
 
     /**
@@ -72,12 +74,34 @@ public class CacheServiceImpl implements CacheService {
     }
 
     /**
+     * 累加验证码错误次数
+     */
+    @Override
+    public long incrSmsCodeRetryCount(String phone) {
+        String retryKey = cacheConfig.getKeySmsCodeRetry(phone);
+        Long count = redisTemplate.opsForValue().increment(retryKey);
+        if (count != null && count == 1L) {
+            redisTemplate.expire(retryKey, AuthConstants.SMS_CODE_EXPIRE_SECONDS, cacheConfig.getDefaultTimeUnit());
+        }
+        return count == null ? 0L : count;
+    }
+
+    /**
+     * 删除验证码错误次数
+     */
+    @Override
+    public void delSmsCodeRetryCount(String phone) {
+        redisTemplate.delete(cacheConfig.getKeySmsCodeRetry(phone));
+    }
+
+    /**
      * 存储用户 Token
      */
     @Override
     public void setUserToken(Long userId, String token, Long timeout) {
         String tokenKey = cacheConfig.getKeyRefreshToken(userId);
-        redisTemplate.opsForValue().set(tokenKey, token, timeout, cacheConfig.getDefaultTimeUnit());
+        TimeUnit timeUnit = cacheConfig.getDefaultTimeUnit();
+        redisTemplate.opsForValue().set(tokenKey, token, timeout, timeUnit);
     }
 
     /**

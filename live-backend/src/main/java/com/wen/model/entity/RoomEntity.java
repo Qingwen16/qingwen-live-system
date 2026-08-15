@@ -3,6 +3,7 @@ package com.wen.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.wen.common.enums.DeleteEnum;
 import lombok.Data;
 
 /**
@@ -109,6 +110,11 @@ public class RoomEntity {
      * 创建时间
      */
     private Long createTime;
+
+    /**
+     * 是否删除 0-已删除 1-正常
+     */
+    private Integer deleted = DeleteEnum.ACTIVE.getCode();
 
     /**
      * 更新时间

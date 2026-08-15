@@ -1,11 +1,16 @@
 package com.wen.service.impl;
 
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.wen.common.exception.BusinessException;
+import com.wen.common.response.PageResult;
 import com.wen.mapper.AddressMapper;
 import com.wen.model.entity.AddressEntity;
+import com.wen.model.vo.AddressIdRequest;
+import com.wen.model.vo.AddressQueryRequest;
 import com.wen.model.vo.AddressRequest;
 import com.wen.service.AddressService;
 import com.wen.utils.UserInfoContext;
@@ -16,6 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 /**
+ * 地址服务实现：用户端操作自己的地址，管理端分页查询/强制删除
+ *
  * @author : rjw
  * @date : 2026-04-09
  */
@@ -23,10 +30,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AddressServiceImpl extends ServiceImpl<AddressMapper, AddressEntity> implements AddressService {
 
+    private static final long MAX_PAGE_SIZE = 100;
+
     private final AddressMapper addressMapper;
 
     @Override
-    public List<AddressEntity> queryUserAddress() {
+    public List<AddressEntity> queryAddress() {
         Long userId = currentUserId();
         LambdaQueryWrapper<AddressEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(AddressEntity::getUserId, userId)
@@ -37,7 +46,7 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, AddressEntity
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createUserAddress(AddressRequest request) {
+    public void createAddress(AddressRequest request) {
         Long userId = currentUserId();
         // 设置为默认地址时，先取消该用户其他默认地址
         cancelDefaultIfNeeded(userId, request.getIsDefault(), null);
@@ -52,14 +61,13 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, AddressEntity
         address.setDistrict(request.getDistrict());
         address.setAddress(request.getAddress());
         address.setPostalCode(request.getPostalCode());
-        address.setTag(request.getTag());
         address.setIsDefault(request.getIsDefault());
         addressMapper.insert(address);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateUserAddress(AddressRequest request) {
+    public void updateAddress(AddressRequest request) {
         Long userId = currentUserId();
         // 校验地址归属，防止越权修改他人地址
         checkAddressOwned(request.getId(), userId);
@@ -76,18 +84,46 @@ public class AddressServiceImpl extends ServiceImpl<AddressMapper, AddressEntity
         address.setDistrict(request.getDistrict());
         address.setAddress(request.getAddress());
         address.setPostalCode(request.getPostalCode());
-        address.setTag(request.getTag());
         address.setIsDefault(request.getIsDefault());
         addressMapper.updateById(address);
     }
 
     @Override
-    public void deleteUserAddress(Long id) {
+    public void deleteAddress(AddressIdRequest request) {
         Long userId = currentUserId();
         LambdaQueryWrapper<AddressEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(AddressEntity::getId, id)
+        wrapper.eq(AddressEntity::getId, request.getAddressId())
                 .eq(AddressEntity::getUserId, userId);
         addressMapper.delete(wrapper);
+    }
+
+    @Override
+    public PageResult<AddressEntity> webQueryAddress(AddressQueryRequest request) {
+        long pageNum = request.getPageNum() < 1 ? 1 : request.getPageNum();
+        long pageSize = request.getPageSize() < 1 ? 10 : request.getPageSize();
+        pageSize = Math.min(pageSize, MAX_PAGE_SIZE);
+
+        LambdaQueryWrapper<AddressEntity> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(request.getUserId() != null, AddressEntity::getUserId, request.getUserId())
+                .like(StrUtil.isNotBlank(request.getName()), AddressEntity::getName, request.getName())
+                .like(StrUtil.isNotBlank(request.getPhone()), AddressEntity::getPhone, request.getPhone())
+                .eq(request.getIsDefault() != null, AddressEntity::getIsDefault, request.getIsDefault())
+                .orderByDesc(AddressEntity::getCreateTime);
+
+        Page<AddressEntity> page = addressMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        return PageResult.of(page.getRecords(), page.getTotal(), page.getCurrent(), page.getSize());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void webDeleteAddress(AddressIdRequest request) {
+        if (request.getAddressId() == null) {
+            throw new BusinessException("地址ID不能为空");
+        }
+        if (addressMapper.selectById(request.getAddressId()) == null) {
+            throw new BusinessException("地址不存在");
+        }
+        addressMapper.deleteById(request.getAddressId());
     }
 
     /**

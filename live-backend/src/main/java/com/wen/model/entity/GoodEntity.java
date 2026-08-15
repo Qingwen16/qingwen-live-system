@@ -3,6 +3,7 @@ package com.wen.model.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.wen.common.enums.DeleteEnum;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -61,9 +62,17 @@ public class GoodEntity {
      */
     private Integer salesCount;
     /**
+     * 关联直播间 ID（可空，为空表示未挂载到直播间）
+     */
+    private Long roomId;
+    /**
      * 备注
      */
     private String remark;
+    /**
+     * 是否删除 0-已删除 1-正常
+     */
+    private Integer deleted = DeleteEnum.ACTIVE.getCode();
     /**
      * 创建时间
      */

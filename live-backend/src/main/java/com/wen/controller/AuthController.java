@@ -4,10 +4,9 @@ package com.wen.controller;
 import com.wen.common.response.Response;
 import com.wen.model.vo.PhoneLoginRequest;
 import com.wen.model.vo.SmsCodeRequest;
-import com.wen.model.dto.TokenDto;
+import com.wen.model.vo.UserInfoResponse;
 import com.wen.model.vo.WechatLoginRequest;
 import com.wen.service.AuthService;
-import com.wen.model.vo.UserInfoResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,11 +50,12 @@ public class AuthController {
     }
 
     /**
-     * 登出
+     * 登出（token 从 Authorization 头获取，避免出现在 URL 日志中）
      */
     @GetMapping("/logout")
-    public Response<Void> logout(TokenDto request) {
-        authService.logout(request);
+    public Response<Void> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
+        String token = (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null;
+        authService.logout(token);
         return Response.success(null, "登出成功");
     }
 

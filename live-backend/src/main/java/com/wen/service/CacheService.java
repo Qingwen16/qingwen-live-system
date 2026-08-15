@@ -46,5 +46,14 @@ public interface CacheService {
      */
     void delUserToken(Long userId);
 
+    /**
+     * 累加验证码错误次数，返回累加后的值
+     */
+    long incrSmsCodeRetryCount(String phone);
+
+    /**
+     * 删除验证码错误次数
+     */
+    void delSmsCodeRetryCount(String phone);
 
 }

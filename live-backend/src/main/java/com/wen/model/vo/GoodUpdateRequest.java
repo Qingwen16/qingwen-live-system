@@ -5,55 +5,61 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 /**
- * @author : rjw
- * @date : 2026-04-09
+ * 修改商品请求（状态与销量由上下架/下单系统维护，不在本请求中修改）
  */
 @Data
 public class GoodUpdateRequest {
+
     /**
      * 货物ID
      */
     private Long id;
+
     /**
      * 货物代码
      */
     private String code;
+
     /**
      * 货物名称
      */
     private String name;
+
     /**
      * 货物描述
      */
     private String desc;
+
     /**
      * 货物价格
      */
     private BigDecimal price;
+
     /**
      * 货物单位
      */
     private String unit;
+
     /**
      * 货物重量(kg)
      */
     private BigDecimal weight;
+
     /**
      * 货物图片URL
      */
     private String imageUrl;
-    /**
-     * 货物状态：0-已下架，1-已上架，2-缺货
-     */
-    private Integer status;
+
     /**
      * 库存数量
      */
     private Integer stockCount;
+
     /**
-     * 销售数量
+     * 关联直播间 ID（可空）
      */
-    private Integer salesCount;
+    private Long roomId;
+
     /**
      * 备注
      */

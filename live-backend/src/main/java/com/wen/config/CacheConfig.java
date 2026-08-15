@@ -53,6 +53,13 @@ public class CacheConfig {
     }
 
     /**
+     * 手机验证码错误次数的缓存Key
+     */
+    public String getKeySmsCodeRetry(String phone) {
+        return prefix() + "PhoneSmsCodeRetry:" + phone;
+    }
+
+    /**
      * 设置AccessToken的黑名单
      */
     public String getKeyAccessTokenBlackList(String accessTokenJti) {

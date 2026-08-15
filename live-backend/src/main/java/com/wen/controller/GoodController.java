@@ -1,19 +1,21 @@
 package com.wen.controller;
 
+import com.wen.common.annotation.RequireRole;
+import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.response.Response;
-import com.wen.model.vo.GoodCreateRequest;
 import com.wen.model.dto.GoodDto;
-import com.wen.model.vo.GoodUpdateRequest;
+import com.wen.model.vo.*;
 import com.wen.service.GoodService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 /**
+ * 商品控制器
+ * 后台商品管理仅超级管理员可操作，直播间商品列表供登录用户查看
+ *
  * @author : rjw
- * @date : 2026-04-08
  */
 @RestController
 @RequestMapping("/good")
@@ -23,61 +25,77 @@ public class GoodController {
     private final GoodService goodService;
 
     /**
-     * 新增商品
+     * 新增商品（默认未上架）
      */
-    @PostMapping("/create/good")
-    public Response<String> createGood(@RequestBody GoodCreateRequest request) {
-        String response = goodService.createGood(request);
-        return Response.success(response);
+    @PostMapping("/create")
+    @RequireRole({RoleTypeEnum.SUPER_ADMIN})
+    public Response<Long> createGood(@RequestBody GoodCreateRequest request) {
+        return Response.success(goodService.createGood(request), "新增商品成功");
     }
 
     /**
-     * 新增商品
+     * 修改商品
      */
-    @PostMapping("/update/good")
-    public Response<String> updateGood(@RequestBody GoodUpdateRequest request) {
-        String response = goodService.updateGood(request);
-        return Response.success(response);
+    @PostMapping("/update")
+    @RequireRole({RoleTypeEnum.SUPER_ADMIN})
+    public Response<Void> updateGood(@RequestBody GoodUpdateRequest request) {
+        goodService.updateGood(request);
+        return Response.success(null, "更新商品成功");
     }
 
     /**
-     * 删除商品
+     * 删除商品（软删除）
      */
-    @GetMapping("/delete/good")
-    public Response<String> deleteGood(@Param("goodId") Long goodId) {
-        String response = goodService.deleteGood(goodId);
-        return Response.success(response);
+    @PostMapping("/delete")
+    @RequireRole({RoleTypeEnum.SUPER_ADMIN})
+    public Response<Void> deleteGood(@RequestBody GoodIdRequest request) {
+        goodService.deleteGood(request);
+        return Response.success(null, "删除商品成功");
     }
 
     /**
-     * 获取所有可购买商品列表
+     * 查询商品列表（全量，支持筛选）
      */
-    @GetMapping("/queryTotalGoods")
-    public Response<List<GoodDto>> queryTotalGoods() {
-        List<GoodDto> goods = goodService.queryTotalGoods();
-        return Response.success(goods);
+    @PostMapping("/list")
+    @RequireRole({RoleTypeEnum.SUPER_ADMIN})
+    public Response<List<GoodDto>> queryGoods(@RequestBody GoodQueryRequest request) {
+        return Response.success(goodService.queryGoods(request));
     }
 
     /**
-     * 获取所有上架商品列表
+     * 查询商品列表，直播手机端展示，只需获取全量上架商品
      */
-    @GetMapping("/queryTotalListedGoods")
-    public Response<List<GoodDto>> queryTotalListedGoods() {
-        List<GoodDto> goods = goodService.queryTotalListedGoods();
-        return Response.success(goods);
+    @PostMapping("/app/list")
+    public Response<List<GoodDto>> queryAppGoods() {
+        return Response.success(goodService.queryAppGoods());
     }
 
     /**
-     * 扣减库存
+     * 查询直播间已上架商品（用户端，登录即可访问）
      */
-    @GetMapping("/reduceGoodStock")
-    public Response<String> reduceGoodStock(@Param("goodId") Long goodId, @Param("quantity") Integer quantity) {
-        boolean response = goodService.reduceGoodStock(goodId, quantity);
-        if (response) {
-            return Response.success("货物库存减除成功");
-        } else {
-            return Response.success("货物库存减除失败");
-        }
+    @PostMapping("/room")
+    public Response<List<GoodDto>> queryRoomGoods(@RequestBody RoomIdRequest request) {
+        return Response.success(goodService.queryRoomGoods(request));
+    }
+
+    /**
+     * 上架商品
+     */
+    @PostMapping("/on-shelf")
+    @RequireRole({RoleTypeEnum.SUPER_ADMIN})
+    public Response<Void> onShelf(@RequestBody GoodIdRequest request) {
+        goodService.onShelf(request);
+        return Response.success(null, "上架成功");
+    }
+
+    /**
+     * 下架商品
+     */
+    @PostMapping("/off-shelf")
+    @RequireRole({RoleTypeEnum.SUPER_ADMIN})
+    public Response<Void> offShelf(@RequestBody GoodIdRequest request) {
+        goodService.offShelf(request);
+        return Response.success(null, "下架成功");
     }
 
 }

@@ -1,6 +1,5 @@
 package com.wen.common.generator;
 
-import com.wen.model.dto.TokenDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import lombok.Data;
@@ -43,26 +42,21 @@ public class JwtTokenGenerator {
      * @param role       角色类型
      * @param clientType 客户端类型
      */
-    public TokenDto generateToken(Long userId, Integer role, Integer clientType) {
+    public String generateToken(Long userId, Integer role, Integer clientType) {
         SecretKey key = createSecretKey();
 
-        // 生成 Token，包含 userId、角色、客户端类型和唯一的 JTI
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
         claims.put("role", role);
         claims.put("clientType", clientType);
 
-        String token = Jwts.builder()
+        return Jwts.builder()
                 .claims(claims)
                 .id(UUID.randomUUID().toString())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + tokenTimeout * 1000))
                 .signWith(key)
                 .compact();
-
-        TokenDto tokenDto = new TokenDto();
-        tokenDto.setToken(token);
-        return tokenDto;
     }
 
     /**
