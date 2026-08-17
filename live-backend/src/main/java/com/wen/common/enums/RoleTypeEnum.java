@@ -35,4 +35,19 @@ public enum RoleTypeEnum {
     private final int code;
 
     private final String desc;
+
+    /**
+     * 根据角色 code 获取枚举，未匹配返回 null
+     */
+    public static RoleTypeEnum of(Integer code) {
+        if (code == null) {
+            return null;
+        }
+        for (RoleTypeEnum role : values()) {
+            if (role.code == code) {
+                return role;
+            }
+        }
+        return null;
+    }
 }

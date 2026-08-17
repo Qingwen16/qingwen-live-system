@@ -5,6 +5,7 @@ import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.response.Response;
 import com.wen.model.dto.RoomDto;
 import com.wen.model.vo.RoomIdRequest;
+import com.wen.model.vo.RoomOnlineCountVo;
 import com.wen.model.vo.RoomQueryRequest;
 import com.wen.model.vo.RoomRequest;
 import com.wen.service.RoomService;
@@ -90,5 +91,13 @@ public class RoomController {
     @PostMapping("/getRoomInfo")
     public Response<RoomDto> getRoomInfo(@RequestBody RoomIdRequest request) {
         return Response.success(roomService.getRoomInfo(request));
+    }
+
+    /**
+     * 查询所有直播间在线人数（前端轮询，轻量数据）
+     */
+    @PostMapping("/onlineCounts")
+    public Response<List<RoomOnlineCountVo>> onlineCounts() {
+        return Response.success(roomService.getOnlineCounts());
     }
 }

@@ -98,4 +98,24 @@ public class GoodController {
         return Response.success(null, "下架成功");
     }
 
+    /**
+     * 挂载商品到当前主播直播间（最多 3 个）
+     */
+    @PostMapping("/mount")
+    @RequireRole({RoleTypeEnum.ANCHOR})
+    public Response<Void> mountToRoom(@RequestBody GoodIdRequest request) {
+        goodService.mountToRoom(request);
+        return Response.success(null, "挂载成功");
+    }
+
+    /**
+     * 从当前主播直播间移除商品
+     */
+    @PostMapping("/unmount")
+    @RequireRole({RoleTypeEnum.ANCHOR})
+    public Response<Void> unmountFromRoom(@RequestBody GoodIdRequest request) {
+        goodService.unmountFromRoom(request);
+        return Response.success(null, "移除成功");
+    }
+
 }

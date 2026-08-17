@@ -9,6 +9,14 @@ import lombok.Data;
 @Data
 public class UserQueryRequest {
     /**
+     * 页码，从 1 开始
+     */
+    private long pageNum = 1;
+    /**
+     * 每页大小
+     */
+    private long pageSize = 10;
+    /**
      * 用户名（系统自动生成或用户自定义）
      */
     private String username;
@@ -37,8 +45,16 @@ public class UserQueryRequest {
      */
     private Integer status;
     /**
-     * 用户是否注销 0-注销 1-未注销
+     * 用户是否注销 0-注销 1-未注销；不传默认仅查未注销
      */
     private Integer deleted;
+    /**
+     * 注册时间起点（时间戳，含）
+     */
+    private Long createTimeStart;
+    /**
+     * 注册时间终点（时间戳，含）
+     */
+    private Long createTimeEnd;
 
 }

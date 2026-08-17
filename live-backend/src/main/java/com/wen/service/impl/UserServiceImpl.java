@@ -4,11 +4,13 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wen.common.enums.DeleteEnum;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.enums.StatusEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.common.generator.UserIdGenerator;
+import com.wen.common.response.PageResult;
 import com.wen.model.dto.UserDto;
 import com.wen.mapper.RoleMapper;
 import com.wen.model.vo.UserQueryRequest;
@@ -25,8 +27,12 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * @Author : 青灯文案
@@ -37,6 +43,8 @@ import java.util.Set;
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
+
+    private static final long MAX_PAGE_SIZE = 100;
 
     private final UserMapper userMapper;
 
@@ -83,8 +91,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> queryByCondition(UserQueryRequest request) {
-        // 构建查询条件
+    public PageResult<UserDto> queryByCondition(UserQueryRequest request) {
+        long pageNum = request.getPageNum() < 1 ? 1 : request.getPageNum();
+        long pageSize = request.getPageSize() < 1 ? 10 : request.getPageSize();
+        pageSize = Math.min(pageSize, MAX_PAGE_SIZE);
+        // deleted 不传时默认仅查未注销用户
+        Integer deleted = request.getDeleted() != null ? request.getDeleted() : DeleteEnum.ACTIVE.getCode();
+
         LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(!StrUtil.isEmpty(request.getUsername()), UserEntity::getUsername, request.getUsername())
                 .eq(!StrUtil.isEmpty(request.getPhone()), UserEntity::getPhone, request.getPhone())
@@ -93,21 +106,23 @@ public class UserServiceImpl implements UserService {
                 .eq(!StrUtil.isEmpty(request.getProvince()), UserEntity::getProvince, request.getProvince())
                 .eq(!StrUtil.isEmpty(request.getCity()), UserEntity::getCity, request.getCity())
                 .eq(request.getStatus() != null, UserEntity::getStatus, request.getStatus())
-                .eq(request.getDeleted() != null, UserEntity::getDeleted, request.getDeleted())
+                .eq(UserEntity::getDeleted, deleted)
+                .ge(request.getCreateTimeStart() != null, UserEntity::getCreateTime, request.getCreateTimeStart())
+                .le(request.getCreateTimeEnd() != null, UserEntity::getCreateTime, request.getCreateTimeEnd())
                 .orderByDesc(UserEntity::getCreateTime);
-        // 查询用户列表
-        List<UserEntity> userInfoList = userMapper.selectList(wrapper);
 
-        // 转换为 DTO
+        Page<UserEntity> page = userMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+
         List<UserDto> dtoList = new ArrayList<>();
-        for (UserEntity userInfo : userInfoList) {
+        for (UserEntity userInfo : page.getRecords()) {
             UserDto dto = new UserDto();
             BeanUtils.copyProperties(userInfo, dto);
             dtoList.add(dto);
         }
+        fillRoles(dtoList);
 
-        log.info("根据条件查询到的用户信息数量: [{}]", dtoList.size());
-        return dtoList;
+        log.info("根据条件分页查询用户数量: [{}], 总数: [{}]", dtoList.size(), page.getTotal());
+        return PageResult.of(dtoList, page.getTotal(), page.getCurrent(), page.getSize());
     }
 
     @Override
@@ -192,6 +207,31 @@ public class UserServiceImpl implements UserService {
         }
         if (queryByUserId(userId) == null) {
             throw new BusinessException("用户不存在");
+        }
+    }
+
+    /**
+     * 批量回填用户角色，避免逐条查询角色表
+     */
+    private void fillRoles(List<UserDto> dtoList) {
+        if (CollectionUtils.isEmpty(dtoList)) {
+            return;
+        }
+        Set<Long> userIdSet = dtoList.stream()
+                .map(UserDto::getUserId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(userIdSet)) {
+            return;
+        }
+        List<RoleEntity> roles = roleMapper.selectList(new LambdaQueryWrapper<RoleEntity>()
+                .in(RoleEntity::getUserId, userIdSet));
+        Map<Long, Integer> roleMap = new HashMap<>();
+        for (RoleEntity role : roles) {
+            roleMap.put(role.getUserId(), role.getRole());
+        }
+        for (UserDto dto : dtoList) {
+            dto.setRole(roleMap.get(dto.getUserId()));
         }
     }
 }

@@ -12,6 +12,7 @@ import com.wen.mapper.RoomMapper;
 import com.wen.model.entity.RoomEntity;
 import com.wen.model.dto.RoomDto;
 import com.wen.model.vo.RoomIdRequest;
+import com.wen.model.vo.RoomOnlineCountVo;
 import com.wen.model.vo.RoomQueryRequest;
 import com.wen.model.vo.RoomRequest;
 import com.wen.service.RoomService;
@@ -136,6 +137,7 @@ public class RoomServiceImpl implements RoomService {
         roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
                 .eq(RoomEntity::getId, roomId)
                 .set(RoomEntity::getStatus, RoomStatus.LIVING.getCode())
+                .set(RoomEntity::getCurrentViewers, 0)
                 .set(RoomEntity::getStartTime, System.currentTimeMillis())
                 .set(RoomEntity::getUpdateTime, System.currentTimeMillis()));
 
@@ -181,6 +183,41 @@ public class RoomServiceImpl implements RoomService {
             throw new BusinessException("直播间ID不能为空");
         }
         return toDto(getExistRoom(request.getRoomId()));
+    }
+
+    @Override
+    public void incrementViewers(Long roomId) {
+        if (roomId == null) {
+            return;
+        }
+        // 用 SQL 自增，避免并发下读-改-写导致计数不准
+        roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
+                .eq(RoomEntity::getId, roomId)
+                .setSql("current_viewers = current_viewers + 1, total_viewers = total_viewers + 1"));
+    }
+
+    @Override
+    public void decrementViewers(Long roomId) {
+        if (roomId == null) {
+            return;
+        }
+        roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
+                .eq(RoomEntity::getId, roomId)
+                .setSql("current_viewers = GREATEST(current_viewers - 1, 0)"));
+    }
+
+    @Override
+    public List<RoomOnlineCountVo> getOnlineCounts() {
+        // 只查询 id 和 current_viewers 两列，降低轮询 payload 与 DB 开销
+        List<RoomEntity> rooms = roomMapper.selectList(new LambdaQueryWrapper<RoomEntity>()
+                .eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode())
+                .select(RoomEntity::getId, RoomEntity::getCurrentViewers));
+        return rooms.stream().map(room -> {
+            RoomOnlineCountVo vo = new RoomOnlineCountVo();
+            vo.setRoomId(room.getId());
+            vo.setCurrentViewers(room.getCurrentViewers());
+            return vo;
+        }).toList();
     }
 
     /**

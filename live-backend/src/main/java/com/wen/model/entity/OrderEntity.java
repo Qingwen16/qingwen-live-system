@@ -47,6 +47,11 @@ public class OrderEntity {
     private Long goodId;
 
     /**
+     * 直播间 ID（下单时从商品反查，可空，商品未挂直播间时为 null）
+     */
+    private Long roomId;
+
+    /**
      * 购买数量
      */
     private Integer quantity;

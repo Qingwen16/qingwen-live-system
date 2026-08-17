@@ -2,6 +2,7 @@ package com.wen.service;
 
 import com.wen.model.dto.RoomDto;
 import com.wen.model.vo.RoomIdRequest;
+import com.wen.model.vo.RoomOnlineCountVo;
 import com.wen.model.vo.RoomQueryRequest;
 import com.wen.model.vo.RoomRequest;
 
@@ -48,4 +49,19 @@ public interface RoomService {
      * 查询直播间详情
      */
     RoomDto getRoomInfo(RoomIdRequest request);
+
+    /**
+     * 进入直播间（在线人数 +1，累计观看 +1）
+     */
+    void incrementViewers(Long roomId);
+
+    /**
+     * 离开直播间（在线人数 -1）
+     */
+    void decrementViewers(Long roomId);
+
+    /**
+     * 查询所有直播间在线人数（轻量，仅返回 roomId + currentViewers，供前端轮询）
+     */
+    List<RoomOnlineCountVo> getOnlineCounts();
 }

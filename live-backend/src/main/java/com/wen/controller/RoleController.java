@@ -4,10 +4,12 @@ import com.wen.common.annotation.RequireRole;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.response.Response;
 import com.wen.model.dto.RoleDto;
+import com.wen.model.vo.RoleQueryRequest;
+import com.wen.model.vo.RoleSetRequest;
 import com.wen.service.RoleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.repository.query.Param;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,45 +30,18 @@ public class RoleController {
     /**
      * 查询用户角色
      */
-    @GetMapping("/query")
-    public Response<List<RoleDto>> queryRole(@Param("type") List<Integer> types) {
-        List<RoleDto> response = roleService.queryRole(types);
+    @PostMapping("/query")
+    public Response<List<RoleDto>> queryRole(@RequestBody RoleQueryRequest request) {
+        List<RoleDto> response = roleService.queryRole(request.getTypes());
         return Response.success(response);
     }
 
     /**
-     * 设置超级管理员
+     * 设置用户角色
      */
-    @GetMapping("/set/admin")
-    public Response<String> setAdminRole(@Param("phone") String phone, @Param("code") String code) {
-        String response = roleService.setAdmin(phone, code);
-        return Response.success(response);
-    }
-
-    /**
-     * 设置系统管理员
-     */
-    @GetMapping("/set/superAdmin")
-    public Response<String> setSuperAdminRole(@Param("phone") String phone, @Param("code") String code) {
-        String response = roleService.setSuperAdmin(phone, code);
-        return Response.success(response);
-    }
-
-    /**
-     * 设置超级管理员
-     */
-    @GetMapping("/set/anchor")
-    public Response<String> setAnchorRole(@Param("phone") String phone) {
-        String response = roleService.setAnchorRole(phone);
-        return Response.success(response);
-    }
-
-    /**
-     * 设置超级管理员
-     */
-    @GetMapping("/set/user")
-    public Response<String> setUserRole(@Param("phone") String phone) {
-        String response = roleService.setUserRole(phone);
+    @PostMapping("/set")
+    public Response<String> setRole(@RequestBody RoleSetRequest request) {
+        String response = roleService.setRole(request.getPhone(), request.getRole());
         return Response.success(response);
     }
 

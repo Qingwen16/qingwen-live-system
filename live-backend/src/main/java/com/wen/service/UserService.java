@@ -3,6 +3,7 @@ package com.wen.service;
 import com.wen.model.vo.UserQueryRequest;
 import com.wen.model.entity.UserEntity;
 import com.wen.model.dto.UserDto;
+import com.wen.common.response.PageResult;
 
 import java.util.List;
 import java.util.Set;
@@ -21,9 +22,9 @@ public interface UserService {
     UserDto registerUser(String phone);
 
     /**
-     * 根据 查询条件 获取用户信息
+     * 根据 查询条件 分页获取用户信息（含角色）
      */
-    List<UserDto> queryByCondition(UserQueryRequest request);
+    PageResult<UserDto> queryByCondition(UserQueryRequest request);
 
     /**
      * 根据 手机号 获取用户信息

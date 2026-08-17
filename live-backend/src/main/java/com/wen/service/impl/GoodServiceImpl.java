@@ -12,6 +12,7 @@ import com.wen.model.entity.GoodEntity;
 import com.wen.model.entity.RoomEntity;
 import com.wen.model.vo.*;
 import com.wen.service.GoodService;
+import com.wen.utils.UserInfoContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -29,6 +30,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class GoodServiceImpl implements GoodService {
+
+    private static final int MAX_ROOM_GOODS = 3;
 
     private final GoodMapper goodMapper;
 
@@ -151,6 +154,69 @@ public class GoodServiceImpl implements GoodService {
                 .set(GoodEntity::getStatus, GoodStatusEnum.NOT_LISTED.getCode())
                 .set(GoodEntity::getUpdateTime, System.currentTimeMillis()));
         log.info("商品下架成功: goodId={}", goodId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void mountToRoom(GoodIdRequest request) {
+        Long goodId = request.getGoodId();
+        RoomEntity room = getAnchorRoom();
+        GoodEntity good = getExistGood(goodId);
+        if (GoodStatusEnum.LISTED.getCode() != good.getStatus()) {
+            throw new BusinessException("商品未上架，无法挂载");
+        }
+        if (good.getStockCount() == null || good.getStockCount() <= 0) {
+            throw new BusinessException("商品缺货，无法挂载");
+        }
+        Long mountedCount = goodMapper.selectCount(new LambdaQueryWrapper<GoodEntity>()
+                .eq(GoodEntity::getRoomId, room.getId())
+                .eq(GoodEntity::getDeleted, DeleteEnum.ACTIVE.getCode()));
+        if (mountedCount != null && mountedCount >= MAX_ROOM_GOODS) {
+            throw new BusinessException("一个直播间最多挂载" + MAX_ROOM_GOODS + "个商品");
+        }
+        goodMapper.update(null, new LambdaUpdateWrapper<GoodEntity>()
+                .eq(GoodEntity::getId, goodId)
+                .set(GoodEntity::getRoomId, room.getId())
+                .set(GoodEntity::getUpdateTime, System.currentTimeMillis()));
+        log.info("商品挂载到直播间成功: goodId={}, roomId={}", goodId, room.getId());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void unmountFromRoom(GoodIdRequest request) {
+        Long goodId = request.getGoodId();
+        RoomEntity room = getAnchorRoom();
+        GoodEntity good = getExistGood(goodId);
+        if (!room.getId().equals(good.getRoomId())) {
+            throw new BusinessException("该商品未挂载到您的直播间");
+        }
+        goodMapper.update(null, new LambdaUpdateWrapper<GoodEntity>()
+                .eq(GoodEntity::getId, goodId)
+                .set(GoodEntity::getRoomId, null)
+                .set(GoodEntity::getUpdateTime, System.currentTimeMillis()));
+        log.info("商品从直播间移除成功: goodId={}, roomId={}", goodId, room.getId());
+    }
+
+    /**
+     * 查询当前主播的直播间（一个主播仅一个直播间）
+     */
+    private RoomEntity getAnchorRoom() {
+        Long anchorId = currentUserId();
+        RoomEntity room = roomMapper.selectOne(new LambdaQueryWrapper<RoomEntity>()
+                .eq(RoomEntity::getAnchorId, anchorId)
+                .eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode()));
+        if (room == null) {
+            throw new BusinessException("请先创建直播间");
+        }
+        return room;
+    }
+
+    private Long currentUserId() {
+        Long userId = UserInfoContext.getUserId();
+        if (userId == null) {
+            throw new BusinessException("未登录或登录已过期");
+        }
+        return userId;
     }
 
     /**

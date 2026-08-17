@@ -2,14 +2,13 @@ package com.wen.controller;
 
 import com.wen.common.annotation.RequireRole;
 import com.wen.common.enums.RoleTypeEnum;
+import com.wen.common.response.PageResult;
 import com.wen.common.response.Response;
 import com.wen.model.dto.UserDto;
 import com.wen.model.vo.UserQueryRequest;
 import com.wen.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * 用户信息控制器
@@ -29,15 +28,15 @@ public class UserController {
      * 根据条件查询用户列表
      */
     @PostMapping("/queryByCondition")
-    public Response<List<UserDto>> queryByCondition(@RequestBody UserQueryRequest request) {
-        List<UserDto> response = userService.queryByCondition(request);
+    public Response<PageResult<UserDto>> queryByCondition(@RequestBody UserQueryRequest request) {
+        PageResult<UserDto> response = userService.queryByCondition(request);
         return Response.success(response);
     }
 
     /**
      * 根据手机号查询用户
      */
-    @GetMapping("/queryByPhone")
+    @PostMapping("/queryByPhone")
     public Response<UserDto> queryByPhone(@RequestParam("phone") String phone) {
         UserDto response = userService.queryByPhone(phone);
         return Response.success(response);

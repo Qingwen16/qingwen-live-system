@@ -21,23 +21,11 @@ public interface RoleService {
     Integer queryRoleByUserId(Long userId);
 
     /**
-     * 设置管理员（手机端平台运营）
+     * 设置用户角色
+     *
+     * @param phone 手机号
+     * @param role  角色类型 code，取值见 {@link com.wen.common.enums.RoleTypeEnum}
      */
-    String setAdmin(String phone, String code);
-
-    /**
-     * 设置系统管理员（管理端最高权限）
-     */
-    String setSuperAdmin(String phone, String code);
-
-    /**
-     * 设置主播
-     */
-    String setAnchorRole(String phone);
-
-    /**
-     * 设置用户
-     */
-    String setUserRole(String phone);
+    String setRole(String phone, Integer role);
 
 }

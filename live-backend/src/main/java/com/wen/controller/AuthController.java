@@ -52,7 +52,7 @@ public class AuthController {
     /**
      * 登出（token 从 Authorization 头获取，避免出现在 URL 日志中）
      */
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     public Response<Void> logout(@RequestHeader(value = "Authorization", required = false) String authHeader) {
         String token = (authHeader != null && authHeader.startsWith("Bearer ")) ? authHeader.substring(7) : null;
         authService.logout(token);

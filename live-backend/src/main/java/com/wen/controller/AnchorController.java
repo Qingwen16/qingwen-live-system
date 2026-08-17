@@ -25,7 +25,7 @@ public class AnchorController {
         return Response.success(response);
     }
 
-    @GetMapping("/query")
+    @PostMapping("/query")
     public Response<List<AnchorDto>> queryAnchor() {
         List<AnchorDto> response = anchorService.queryAnchor();
         return Response.success(response);

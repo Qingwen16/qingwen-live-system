@@ -63,38 +63,19 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public String setAdmin(String phone, String code) {
-        return updateRole(phone, code, RoleTypeEnum.ADMIN);
-    }
-
-    @Override
-    public String setSuperAdmin(String phone, String code) {
-        return updateRole(phone, code, RoleTypeEnum.SUPER_ADMIN);
-    }
-
-    @Override
-    public String setAnchorRole(String phone) {
-        return updateRole(phone, null, RoleTypeEnum.ANCHOR);
-    }
-
-    @Override
-    public String setUserRole(String phone) {
-        return updateRole(phone, null, RoleTypeEnum.USER);
+    public String setRole(String phone, Integer role) {
+        RoleTypeEnum roleType = RoleTypeEnum.of(role);
+        if (roleType == null) {
+            throw new BusinessException("非法的角色类型: " + role);
+        }
+        return updateRole(phone, roleType);
     }
 
     /**
-     * 更新用户角色，code 为空时跳过验证码校验
+     * 更新用户角色
      */
-    private String updateRole(String phone, String code, RoleTypeEnum role) {
+    private String updateRole(String phone, RoleTypeEnum role) {
         checkPhoneParam(phone);
-        if (code != null) {
-            if (StrUtil.isEmpty(code)) {
-                return "设置角色的验证码为空";
-            }
-            if (!AuthConstants.ADMIN_CHECK_CODE.equals(code)) {
-                return "设置角色的验证码有误";
-            }
-        }
         if (isRoleNotExist(phone)) {
             return "未查询该用户角色，请检验手机号";
         }

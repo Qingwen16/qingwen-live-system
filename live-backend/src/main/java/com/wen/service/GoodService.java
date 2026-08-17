@@ -51,4 +51,14 @@ public interface GoodService {
      */
     void offShelf(GoodIdRequest goodId);
 
+    /**
+     * 挂载商品到当前主播直播间（一个直播间最多 3 个商品）
+     */
+    void mountToRoom(GoodIdRequest request);
+
+    /**
+     * 从当前主播直播间移除商品
+     */
+    void unmountFromRoom(GoodIdRequest request);
+
 }
