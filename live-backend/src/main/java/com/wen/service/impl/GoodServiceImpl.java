@@ -4,14 +4,18 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.wen.common.enums.DeleteEnum;
 import com.wen.common.enums.GoodStatusEnum;
+import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.exception.BusinessException;
+import com.wen.mapper.AnchorRoomRelationMapper;
 import com.wen.mapper.GoodMapper;
 import com.wen.mapper.RoomMapper;
 import com.wen.model.dto.GoodDto;
+import com.wen.model.entity.AnchorRoomRelation;
 import com.wen.model.entity.GoodEntity;
 import com.wen.model.entity.RoomEntity;
 import com.wen.model.vo.*;
 import com.wen.service.GoodService;
+import com.wen.service.RoleService;
 import com.wen.utils.UserInfoContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +40,10 @@ public class GoodServiceImpl implements GoodService {
     private final GoodMapper goodMapper;
 
     private final RoomMapper roomMapper;
+
+    private final AnchorRoomRelationMapper relationMapper;
+
+    private final RoleService roleService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -198,15 +206,26 @@ public class GoodServiceImpl implements GoodService {
     }
 
     /**
-     * 查询当前主播的直播间（一个主播仅一个直播间）
+     * 查询当前主播的直播间（关联表按 id 倒序取最近一条）
      */
     private RoomEntity getAnchorRoom() {
-        Long anchorId = currentUserId();
+        Long userId = currentUserId();
+        Integer role = roleService.queryRoleByUserId(userId);
+        if (role == null || role != RoleTypeEnum.ANCHOR.getCode()) {
+            throw new BusinessException("您还不是主播");
+        }
+        List<AnchorRoomRelation> relations = relationMapper.selectList(new LambdaQueryWrapper<AnchorRoomRelation>()
+                .eq(AnchorRoomRelation::getAnchorId, userId)
+                .eq(AnchorRoomRelation::getDeleted, DeleteEnum.ACTIVE.getCode())
+                .orderByDesc(AnchorRoomRelation::getId));
+        if (relations.isEmpty()) {
+            throw new BusinessException("请先创建直播间");
+        }
         RoomEntity room = roomMapper.selectOne(new LambdaQueryWrapper<RoomEntity>()
-                .eq(RoomEntity::getAnchorId, anchorId)
+                .eq(RoomEntity::getId, relations.get(0).getRoomId())
                 .eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (room == null) {
-            throw new BusinessException("请先创建直播间");
+            throw new BusinessException("直播间不存在");
         }
         return room;
     }

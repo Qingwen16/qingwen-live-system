@@ -1,10 +1,10 @@
 package com.wen.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.wen.common.enums.DeleteEnum;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  * 直播间信息表
@@ -22,14 +22,9 @@ public class RoomEntity {
     private Long id;
 
     /**
-     * 房间号（唯一标识）
+     * 推流名（唯一标识，腾讯云 StreamName）
      */
-    private String roomNumber;
-
-    /**
-     * 主播 ID（关联 AnchorInfo）
-     */
-    private Long anchorId;
+    private String streamName;
 
     /**
      * 直播间标题
@@ -37,54 +32,24 @@ public class RoomEntity {
     private String title;
 
     /**
-     * 直播间封面图
-     */
-    private String coverImage;
-
-    /**
-     * 分区 ID（关联 LiveCategory）
-     */
-    private Long categoryId;
-
-    /**
-     * 直播间公告
-     */
-    private String announcement;
-
-    /**
-     * 直播标签（JSON 数组）
-     */
-    private String tags;
-
-    /**
      * 当前观看人数
      */
     private Integer currentViewers;
 
     /**
-     * 累计观看人数
+     * 累计直播时长(小时)
      */
-    private Long totalViewers;
+    private Long totalLiveHours;
 
     /**
-     * 点赞数
+     * 累计收益
      */
-    private Long likeCount;
-
-    /**
-     * 关注数
-     */
-    private Long followCount;
+    private BigDecimal totalIncome;
 
     /**
      * 直播状态 0-未开播 1-直播中 2-回放 3-关闭
      */
     private Integer status;
-
-    /**
-     * 是否推荐 0-否 1-是
-     */
-    private Integer isRecommend;
 
     /**
      * 推流地址
@@ -107,18 +72,19 @@ public class RoomEntity {
     private Long endTime;
 
     /**
-     * 创建时间
-     */
-    private Long createTime;
-
-    /**
      * 是否删除 0-已删除 1-正常
      */
     private Integer deleted = DeleteEnum.ACTIVE.getCode();
 
     /**
-     * 更新时间
+     * 创建时间
      */
+    @TableField(fill = FieldFill.INSERT)
+    private Long createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateTime;
 }
-

@@ -9,6 +9,7 @@ import com.wen.model.vo.AddressIdRequest;
 import com.wen.model.vo.AddressQueryRequest;
 import com.wen.model.vo.AddressRequest;
 import com.wen.service.AddressService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -45,7 +46,7 @@ public class AddressController {
      * 新增收货地址
      */
     @PostMapping("/create")
-    public Response<Void> createAddress(@RequestBody AddressRequest request) {
+    public Response<Void> createAddress(@Valid @RequestBody AddressRequest request) {
         addressService.createAddress(request);
         return Response.success(null, "地址已保存");
     }
@@ -54,7 +55,7 @@ public class AddressController {
      * 修改收货地址
      */
     @PostMapping("/update")
-    public Response<Void> updateAddress(@RequestBody AddressRequest request) {
+    public Response<Void> updateAddress(@Valid @RequestBody AddressRequest request) {
         addressService.updateAddress(request);
         return Response.success(null, "地址已更新");
     }
@@ -63,7 +64,7 @@ public class AddressController {
      * 删除自己的收货地址
      */
     @PostMapping("/delete")
-    public Response<Void> deleteAddress(@RequestBody AddressIdRequest request) {
+    public Response<Void> deleteAddress(@Valid @RequestBody AddressIdRequest request) {
         addressService.deleteAddress(request);
         return Response.success(null, "地址已删除");
     }
@@ -75,7 +76,8 @@ public class AddressController {
      */
     @PostMapping("/web/query")
     @RequireRole({RoleTypeEnum.SUPER_ADMIN})
-    public Response<PageResult<AddressEntity>> webQueryAddress(@RequestBody AddressQueryRequest request) {
+    public Response<PageResult<AddressEntity>> webQueryAddress(
+            @RequestBody AddressQueryRequest request) {
         return Response.success(addressService.webQueryAddress(request));
     }
 
@@ -84,7 +86,7 @@ public class AddressController {
      */
     @PostMapping("/web/delete")
     @RequireRole({RoleTypeEnum.SUPER_ADMIN})
-    public Response<Void> webDeleteAddress(@RequestBody AddressIdRequest request) {
+    public Response<Void> webDeleteAddress(@Valid @RequestBody AddressIdRequest request) {
         addressService.webDeleteAddress(request);
         return Response.success(null, "地址已删除");
     }

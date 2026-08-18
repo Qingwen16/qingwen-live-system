@@ -1,10 +1,6 @@
 package com.wen.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 /**
@@ -14,26 +10,17 @@ import lombok.Data;
 @TableName("user_entity")
 @Data
 public class UserEntity {
-    /**
-     * 主键 ID（数据库自增）
-     */
-    @TableId(type = IdType.AUTO)
-    private Long id;
 
     /**
-     * 用户唯一标识（10 位数字，类似 QQ 号）
+     * 用户唯一标识（雪花算法生成，作为主键）
      */
+    @TableId(type = IdType.ASSIGN_ID)
     private Long userId;
 
     /**
      * 用户名（系统自动生成或用户自定义）
      */
     private String username;
-
-    /**
-     * 头像 URL
-     */
-    private String avatar;
 
     /**
      * 用户手机
@@ -44,31 +31,6 @@ public class UserEntity {
      * 性别 0-未知 1-男 2-女
      */
     private Integer gender;
-
-    /**
-     * 国家
-     */
-    private String country;
-
-    /**
-     * 省份
-     */
-    private String province;
-
-    /**
-     * 城市
-     */
-    private String city;
-
-    /**
-     * 地址
-     */
-    private String address;
-
-    /**
-     * 邮编
-     */
-    private String zipCode;
 
     /**
      * 用户状态 0-禁用 1-正常
@@ -83,10 +45,12 @@ public class UserEntity {
     /**
      * 创建时间
      */
+    @TableField(fill = FieldFill.INSERT)
     private Long createTime;
 
     /**
      * 修改时间
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateTime;
 }

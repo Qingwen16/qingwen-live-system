@@ -4,21 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * 用户删除状态枚举
- * @author jwruan
+ * 是否默认枚举
  */
 @AllArgsConstructor
 @Getter
-public enum DeleteEnum {
+public enum DefaultEnum {
 
-    /**
-     * 用户信息的状态
-     */
-    DELETED(0, "已删除"),
+    NO(0, "否"),
 
-    ACTIVE(1, "未删除");
+    YES(1, "是");
 
     private final int code;
 
     private final String desc;
+
 }

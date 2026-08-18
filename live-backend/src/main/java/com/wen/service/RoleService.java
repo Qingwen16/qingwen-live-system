@@ -23,9 +23,9 @@ public interface RoleService {
     /**
      * 设置用户角色
      *
-     * @param phone 手机号
-     * @param role  角色类型 code，取值见 {@link com.wen.common.enums.RoleTypeEnum}
+     * @param userId 用户ID
+     * @param role   角色类型 code，取值见 {@link com.wen.common.enums.RoleTypeEnum}
      */
-    String setRole(String phone, Integer role);
+    String setRole(Long userId, Integer role);
 
 }

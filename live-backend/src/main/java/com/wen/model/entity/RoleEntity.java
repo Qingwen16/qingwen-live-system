@@ -15,25 +15,10 @@ import lombok.Data;
 public class RoleEntity {
 
     /**
-     * 主键ID（数据库自增）
+     * 用户ID，复用作为角色表主键（一个用户一条角色记录）
      */
-    @TableId(type = IdType.AUTO)
-    private Long id;
-
-    /**
-     * 用户ID
-     */
+    @TableId(type = IdType.INPUT)
     private Long userId;
-
-    /**
-     * 用户名字
-     */
-    private String userName;
-
-    /**
-     * 用户手机
-     */
-    private String phone;
 
     /**
      * 角色类型

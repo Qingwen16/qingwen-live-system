@@ -9,7 +9,6 @@ import com.wen.common.enums.DeleteEnum;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.enums.StatusEnum;
 import com.wen.common.exception.BusinessException;
-import com.wen.common.generator.UserIdGenerator;
 import com.wen.common.response.PageResult;
 import com.wen.model.dto.UserDto;
 import com.wen.mapper.RoleMapper;
@@ -66,7 +65,6 @@ public class UserServiceImpl implements UserService {
         log.info("手机号用户注册：{}", phone);
         long currentTime = System.currentTimeMillis();
         UserEntity userInfo = new UserEntity();
-        userInfo.setUserId(UserIdGenerator.generator());
         userInfo.setUsername("phone_" + phone);
         userInfo.setPhone(phone);
         userInfo.setStatus(StatusEnum.NORMAL.getCode());
@@ -74,11 +72,9 @@ public class UserServiceImpl implements UserService {
         userInfo.setCreateTime(currentTime);
         userInfo.setUpdateTime(currentTime);
         userMapper.insert(userInfo);
-        // 3. 设置用户角色
+        // 3. 设置用户角色（userId 由雪花算法在插入时回填）
         RoleEntity userRole = new RoleEntity();
         userRole.setUserId(userInfo.getUserId());
-        userRole.setUserName(userInfo.getUsername());
-        userRole.setPhone(userInfo.getPhone());
         userRole.setRole(RoleTypeEnum.USER.getCode());
         userRole.setCreateTime(currentTime);
         userRole.setUpdateTime(currentTime);
@@ -102,14 +98,25 @@ public class UserServiceImpl implements UserService {
         wrapper.like(!StrUtil.isEmpty(request.getUsername()), UserEntity::getUsername, request.getUsername())
                 .eq(!StrUtil.isEmpty(request.getPhone()), UserEntity::getPhone, request.getPhone())
                 .eq(request.getGender() != null, UserEntity::getGender, request.getGender())
-                .eq(!StrUtil.isEmpty(request.getCountry()), UserEntity::getCountry, request.getCountry())
-                .eq(!StrUtil.isEmpty(request.getProvince()), UserEntity::getProvince, request.getProvince())
-                .eq(!StrUtil.isEmpty(request.getCity()), UserEntity::getCity, request.getCity())
                 .eq(request.getStatus() != null, UserEntity::getStatus, request.getStatus())
                 .eq(UserEntity::getDeleted, deleted)
                 .ge(request.getCreateTimeStart() != null, UserEntity::getCreateTime, request.getCreateTimeStart())
                 .le(request.getCreateTimeEnd() != null, UserEntity::getCreateTime, request.getCreateTimeEnd())
                 .orderByDesc(UserEntity::getCreateTime);
+
+        // 角色过滤：角色在独立表，先查满足角色的 userId 集合再 IN
+        Integer role = request.getRole();
+        if (role != null) {
+            List<RoleEntity> roles = roleMapper.selectList(new LambdaQueryWrapper<RoleEntity>()
+                    .eq(RoleEntity::getRole, role));
+            Set<Long> roleUserIdSet = roles.stream()
+                    .map(RoleEntity::getUserId)
+                    .collect(Collectors.toSet());
+            if (CollectionUtils.isEmpty(roleUserIdSet)) {
+                return PageResult.of(Collections.emptyList(), 0L, pageNum, pageSize);
+            }
+            wrapper.in(UserEntity::getUserId, roleUserIdSet);
+        }
 
         Page<UserEntity> page = userMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
 

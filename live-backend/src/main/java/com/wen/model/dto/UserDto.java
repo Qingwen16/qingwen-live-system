@@ -10,19 +10,14 @@ import lombok.Data;
 public class UserDto {
 
     /**
-     * 用户唯一标识（10 位数字，类似 QQ 号）
+     * 用户唯一标识
      */
     private Long userId;
 
     /**
-     * 用户名（系统自动生成或用户自定义）
+     * 用户名
      */
     private String username;
-
-    /**
-     * 头像 URL
-     */
-    private String avatar;
 
     /**
      * 用户手机
@@ -35,29 +30,9 @@ public class UserDto {
     private Integer gender;
 
     /**
-     * 国家
+     * 角色类型 {@link com.wen.common.enums.RoleTypeEnum} 0-用户 1-主播 2-管理员 3-系统管理员
      */
-    private String country;
-
-    /**
-     * 省份
-     */
-    private String province;
-
-    /**
-     * 城市
-     */
-    private String city;
-
-    /**
-     * 地址
-     */
-    private String address;
-
-    /**
-     * 邮编
-     */
-    private String zipCode;
+    private Integer role;
 
     /**
      * 用户状态 0-禁用 1-正常
@@ -68,10 +43,5 @@ public class UserDto {
      * 用户是否注销 0-注销 1-未注销
      */
     private Integer deleted;
-
-    /**
-     * 角色类型 {@link com.wen.common.enums.RoleTypeEnum} 0-用户 1-主播 2-管理员 3-系统管理员
-     */
-    private Integer role;
 
 }

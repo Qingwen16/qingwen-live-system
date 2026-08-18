@@ -1,10 +1,8 @@
 package com.wen.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.wen.common.constant.AuthConstants;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.exception.BusinessException;
 import com.wen.model.dto.RoleDto;
@@ -14,6 +12,7 @@ import com.wen.service.RoleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
@@ -63,44 +62,42 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public String setRole(String phone, Integer role) {
+    @Transactional(rollbackFor = Exception.class)
+    public String setRole(Long userId, Integer role) {
         RoleTypeEnum roleType = RoleTypeEnum.of(role);
         if (roleType == null) {
             throw new BusinessException("非法的角色类型: " + role);
         }
-        return updateRole(phone, roleType);
+        return updateRole(userId, roleType);
     }
 
     /**
      * 更新用户角色
      */
-    private String updateRole(String phone, RoleTypeEnum role) {
-        checkPhoneParam(phone);
-        if (isRoleNotExist(phone)) {
-            return "未查询该用户角色，请检验手机号";
+    private String updateRole(Long userId, RoleTypeEnum role) {
+        checkUserIdParam(userId);
+        if (isRoleNotExist(userId)) {
+            return "未查询该用户角色，请检验用户ID";
         }
         LambdaUpdateWrapper<RoleEntity> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(RoleEntity::getPhone, phone);
+        wrapper.eq(RoleEntity::getUserId, userId);
         wrapper.set(RoleEntity::getRole, role.getCode());
         wrapper.set(RoleEntity::getUpdateTime, System.currentTimeMillis());
         roleMapper.update(wrapper);
-        log.info("用户角色修改成功: [{}] 已被设置为 [{}]", phone, role.getDesc());
+        log.info("用户角色修改成功: [{}] 已被设置为 [{}]", userId, role.getDesc());
         return "用户角色修改成功";
     }
 
-    private boolean isRoleNotExist(String phone) {
+    private boolean isRoleNotExist(Long userId) {
         LambdaQueryWrapper<RoleEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(RoleEntity::getPhone, phone);
+        wrapper.eq(RoleEntity::getUserId, userId);
         Long count = roleMapper.selectCount(wrapper);
         return count == null || count <= 0;
     }
 
-    private void checkPhoneParam(String phone) {
-        if (StrUtil.isEmpty(phone)) {
-            throw new BusinessException("输入参数不能为空");
-        }
-        if (!phone.matches(AuthConstants.PHONE_REGEX)) {
-            throw new BusinessException("手机号格式不正确");
+    private void checkUserIdParam(Long userId) {
+        if (userId == null) {
+            throw new BusinessException("用户ID不能为空");
         }
     }
 

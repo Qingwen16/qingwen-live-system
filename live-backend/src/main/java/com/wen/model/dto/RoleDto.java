@@ -15,16 +15,6 @@ public class RoleDto {
     private Long userId;
 
     /**
-     * 用户名字
-     */
-    private Long userName;
-
-    /**
-     * 用户手机
-     */
-    private String phone;
-
-    /**
      * 角色类型
      */
     private Integer role;

@@ -22,6 +22,6 @@ public class MyMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.strictUpdateFill(metaObject, "updateTime", Long.class, System.currentTimeMillis());
+        this.setFieldValByName("updateTime", System.currentTimeMillis(), metaObject);
     }
 }

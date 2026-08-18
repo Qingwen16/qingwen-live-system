@@ -1,5 +1,6 @@
 package com.wen.model.vo;
 
+import com.wen.common.enums.RoomStatusEnum;
 import lombok.Data;
 
 /**
@@ -16,17 +17,7 @@ public class RoomQueryRequest {
     private String title;
 
     /**
-     * 直播状态 {@link com.wen.common.enums.RoomStatus}
+     * 直播状态 {@link RoomStatusEnum}
      */
     private Integer status;
-
-    /**
-     * 分区 ID
-     */
-    private Long categoryId;
-
-    /**
-     * 是否推荐 0-否 1-是
-     */
-    private Integer isRecommend;
 }

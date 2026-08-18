@@ -20,11 +20,6 @@ public class LoginUserInfoVO {
     private String username;
 
     /**
-     * 头像 URL
-     */
-    private String avatar;
-
-    /**
      * 手机号（脱敏）
      */
     private String phone;
@@ -38,7 +33,6 @@ public class LoginUserInfoVO {
         LoginUserInfoVO vo = new LoginUserInfoVO();
         vo.setUserId(user.getUserId());
         vo.setUsername(user.getUsername());
-        vo.setAvatar(user.getAvatar());
         vo.setPhone(maskPhone(user.getPhone()));
         vo.setRole(user.getRole());
         return vo;

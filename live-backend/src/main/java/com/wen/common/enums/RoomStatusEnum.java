@@ -9,7 +9,7 @@ import lombok.Getter;
  */
 @AllArgsConstructor
 @Getter
-public enum RoomStatus {
+public enum RoomStatusEnum {
 
     /**
      * 直播间状态

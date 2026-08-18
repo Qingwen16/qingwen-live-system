@@ -51,7 +51,7 @@ public interface RoomService {
     RoomDto getRoomInfo(RoomIdRequest request);
 
     /**
-     * 进入直播间（在线人数 +1，累计观看 +1）
+     * 进入直播间（在线人数 +1）
      */
     void incrementViewers(Long roomId);
 

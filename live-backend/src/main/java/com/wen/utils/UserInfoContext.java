@@ -1,5 +1,7 @@
 package com.wen.utils;
 
+import com.wen.common.exception.BusinessException;
+
 /**
  * 用户上下文工具类
  * 使用 ThreadLocal 存储当前请求的登录用户信息
@@ -36,7 +38,10 @@ public class UserInfoContext {
      */
     public static Long getUserId() {
         LoginUser user = CURRENT_USER.get();
-        return user == null ? null : user.getUserId();
+        if (user == null || user.getUserId() == null) {
+            throw new BusinessException("用户 ID 为 null，未登录或登录已过期");
+        }
+        return user.getUserId();
     }
 
     /**

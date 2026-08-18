@@ -1,6 +1,9 @@
 package com.wen.model.dto;
 
+import com.wen.common.enums.RoomStatusEnum;
 import lombok.Data;
+
+import java.math.BigDecimal;
 
 /**
  * 直播间信息响应
@@ -16,14 +19,9 @@ public class RoomDto {
     private Long id;
 
     /**
-     * 房间号（唯一标识）
+     * 推流名（腾讯云 StreamName）
      */
-    private String roomNumber;
-
-    /**
-     * 主播 ID
-     */
-    private Long anchorId;
+    private String streamName;
 
     /**
      * 直播间标题
@@ -31,54 +29,24 @@ public class RoomDto {
     private String title;
 
     /**
-     * 直播间封面图
-     */
-    private String coverImage;
-
-    /**
-     * 分区 ID
-     */
-    private Long categoryId;
-
-    /**
-     * 直播间公告
-     */
-    private String announcement;
-
-    /**
-     * 直播标签（JSON 数组）
-     */
-    private String tags;
-
-    /**
      * 当前观看人数
      */
     private Integer currentViewers;
 
     /**
-     * 累计观看人数
+     * 累计直播时长(小时)
      */
-    private Long totalViewers;
+    private Long totalLiveHours;
 
     /**
-     * 点赞数
+     * 累计收益
      */
-    private Long likeCount;
+    private BigDecimal totalIncome;
 
     /**
-     * 关注数
-     */
-    private Long followCount;
-
-    /**
-     * 直播状态 {@link com.wen.common.enums.RoomStatus}
+     * 直播状态 {@link RoomStatusEnum}
      */
     private Integer status;
-
-    /**
-     * 是否推荐 0-否 1-是
-     */
-    private Integer isRecommend;
 
     /**
      * 推流地址

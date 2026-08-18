@@ -7,6 +7,7 @@ import com.wen.model.dto.RoleDto;
 import com.wen.model.vo.RoleQueryRequest;
 import com.wen.model.vo.RoleSetRequest;
 import com.wen.service.RoleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,8 +41,8 @@ public class RoleController {
      * 设置用户角色
      */
     @PostMapping("/set")
-    public Response<String> setRole(@RequestBody RoleSetRequest request) {
-        String response = roleService.setRole(request.getPhone(), request.getRole());
+    public Response<String> setRole(@Valid @RequestBody RoleSetRequest request) {
+        String response = roleService.setRole(request.getUserId(), request.getRole());
         return Response.success(response);
     }
 

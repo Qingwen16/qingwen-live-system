@@ -39,11 +39,6 @@ public class AddressEntity {
     private String phone;
 
     /**
-     * 国家
-     */
-    private String country;
-
-    /**
      * 省份
      */
     private String province;
@@ -62,11 +57,6 @@ public class AddressEntity {
      * 详细地址
      */
     private String address;
-
-    /**
-     * 邮政编码
-     */
-    private String postalCode;
 
     /**
      * 是否默认地址：0-否，1-是
