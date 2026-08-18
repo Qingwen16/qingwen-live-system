@@ -1,5 +1,6 @@
 package com.wen.model.vo;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -9,6 +10,7 @@ import lombok.Data;
 @Data
 public class GoodIdRequest {
 
+    @NotNull(message = "请求的地址ID不能为空")
     private Long goodId;
 
 }

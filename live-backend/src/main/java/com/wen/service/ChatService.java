@@ -1,6 +1,6 @@
 package com.wen.service;
 
-import com.wen.model.vo.ChatMessage;
+import com.wen.model.dto.ChatMessageDto;
 import com.wen.model.vo.ChatSendRequest;
 
 import java.util.List;
@@ -15,11 +15,11 @@ public interface ChatService {
     /**
      * 发送聊天消息（校验 + 落库 + 返回消息对象）
      */
-    ChatMessage sendMessage(Long userId, ChatSendRequest request);
+    ChatMessageDto sendMessage(Long userId, ChatSendRequest request);
 
     /**
      * 查询直播间历史消息（按时间正序返回最近 N 条）
      */
-    List<ChatMessage> queryHistory(Long roomId, Integer limit);
+    List<ChatMessageDto> queryHistory(Long roomId, Integer limit);
 
 }

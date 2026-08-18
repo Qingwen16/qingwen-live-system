@@ -2,7 +2,7 @@ package com.wen.controller;
 
 import com.wen.common.response.Response;
 import com.wen.model.vo.ChatHistoryRequest;
-import com.wen.model.vo.ChatMessage;
+import com.wen.model.dto.ChatMessageDto;
 import com.wen.model.vo.ChatSendRequest;
 import com.wen.service.ChatService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class ChatController {
         Long userId = accessor.getSessionAttributes() != null
                 ? (Long) accessor.getSessionAttributes().get("userId")
                 : null;
-        ChatMessage message = chatService.sendMessage(userId, request);
+        ChatMessageDto message = chatService.sendMessage(userId, request);
         messagingTemplate.convertAndSend("/topic/room/" + message.getRoomId(), message);
     }
 
@@ -45,7 +45,7 @@ public class ChatController {
      * 查询直播间历史消息
      */
     @PostMapping("/history")
-    public Response<List<ChatMessage>> history(@RequestBody ChatHistoryRequest request) {
+    public Response<List<ChatMessageDto>> history(@RequestBody ChatHistoryRequest request) {
         return Response.success(chatService.queryHistory(request.getRoomId(), request.getLimit()));
     }
 

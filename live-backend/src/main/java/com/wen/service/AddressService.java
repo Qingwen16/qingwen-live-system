@@ -4,7 +4,7 @@ import com.wen.common.response.PageResult;
 import com.wen.model.entity.AddressEntity;
 import com.wen.model.vo.AddressIdRequest;
 import com.wen.model.vo.AddressQueryRequest;
-import com.wen.model.vo.AddressRequest;
+import com.wen.model.vo.AddressInsertRequest;
 
 import java.util.List;
 
@@ -24,12 +24,12 @@ public interface AddressService {
     /**
      * 新增收货地址
      */
-    void createAddress(AddressRequest request);
+    void createAddress(AddressInsertRequest request);
 
     /**
      * 修改收货地址
      */
-    void updateAddress(AddressRequest request);
+    void updateAddress(AddressInsertRequest request);
 
     /**
      * 删除自己的收货地址

@@ -20,7 +20,7 @@ import java.util.Map;
  */
 @Component
 @RequiredArgsConstructor
-public class WebSocketAuthInterceptor implements HandshakeInterceptor {
+public class WebSocketInterceptor implements HandshakeInterceptor {
 
     private final JwtTokenGenerator jwtTokenGenerator;
 

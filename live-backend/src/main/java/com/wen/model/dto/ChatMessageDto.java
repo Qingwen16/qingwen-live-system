@@ -1,4 +1,4 @@
-package com.wen.model.vo;
+package com.wen.model.dto;
 
 import lombok.Data;
 
@@ -8,7 +8,7 @@ import lombok.Data;
  * @author : rjw
  */
 @Data
-public class ChatMessage {
+public class ChatMessageDto {
 
     /**
      * 直播间 ID

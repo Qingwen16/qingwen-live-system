@@ -8,9 +8,9 @@ import com.wen.common.enums.DeleteEnum;
 import com.wen.common.enums.RoomStatusEnum;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.exception.BusinessException;
-import com.wen.mapper.AnchorRoomRelationMapper;
+import com.wen.mapper.UserRoomMapper;
 import com.wen.mapper.RoomMapper;
-import com.wen.model.entity.AnchorRoomRelation;
+import com.wen.model.entity.UserRoom;
 import com.wen.model.entity.RoomEntity;
 import com.wen.model.dto.RoomDto;
 import com.wen.model.vo.RoomIdRequest;
@@ -41,7 +41,7 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoomMapper roomMapper;
 
-    private final AnchorRoomRelationMapper relationMapper;
+    private final UserRoomMapper relationMapper;
 
     private final RoleService roleService;
 
@@ -66,7 +66,7 @@ public class RoomServiceImpl implements RoomService {
         room.setUpdateTime(currentTime);
         roomMapper.insert(room);
 
-        AnchorRoomRelation relation = new AnchorRoomRelation();
+        UserRoom relation = new UserRoom();
         relation.setAnchorId(userId);
         relation.setRoomId(room.getId());
         relationMapper.insert(relation);
@@ -111,10 +111,10 @@ public class RoomServiceImpl implements RoomService {
                 .set(RoomEntity::getDeleted, DeleteEnum.DELETED.getCode())
                 .set(RoomEntity::getUpdateTime, System.currentTimeMillis()));
         // 直播间删除时同步逻辑删除关联关系，避免残留无效关联
-        relationMapper.update(null, new LambdaUpdateWrapper<AnchorRoomRelation>()
-                .eq(AnchorRoomRelation::getRoomId, request.getId())
-                .eq(AnchorRoomRelation::getDeleted, DeleteEnum.ACTIVE.getCode())
-                .set(AnchorRoomRelation::getDeleted, DeleteEnum.DELETED.getCode()));
+        relationMapper.update(null, new LambdaUpdateWrapper<UserRoom>()
+                .eq(UserRoom::getRoomId, request.getId())
+                .eq(UserRoom::getDeleted, DeleteEnum.ACTIVE.getCode())
+                .set(UserRoom::getDeleted, DeleteEnum.DELETED.getCode()));
         log.info("直播间 [{}] 已删除", request.getId());
         return toDto(room);
     }
@@ -238,10 +238,10 @@ public class RoomServiceImpl implements RoomService {
         }
         Long userId = currentUserId();
         checkAnchor(userId);
-        Long count = relationMapper.selectCount(new LambdaQueryWrapper<AnchorRoomRelation>()
-                .eq(AnchorRoomRelation::getAnchorId, userId)
-                .eq(AnchorRoomRelation::getRoomId, room.getId())
-                .eq(AnchorRoomRelation::getDeleted, DeleteEnum.ACTIVE.getCode()));
+        Long count = relationMapper.selectCount(new LambdaQueryWrapper<UserRoom>()
+                .eq(UserRoom::getAnchorId, userId)
+                .eq(UserRoom::getRoomId, room.getId())
+                .eq(UserRoom::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (count == null || count == 0) {
             throw new BusinessException("无权操作该直播间");
         }

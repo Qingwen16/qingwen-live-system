@@ -6,11 +6,11 @@ import com.wen.common.enums.DeleteEnum;
 import com.wen.common.enums.GoodStatusEnum;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.exception.BusinessException;
-import com.wen.mapper.AnchorRoomRelationMapper;
+import com.wen.mapper.UserRoomMapper;
 import com.wen.mapper.GoodMapper;
 import com.wen.mapper.RoomMapper;
 import com.wen.model.dto.GoodDto;
-import com.wen.model.entity.AnchorRoomRelation;
+import com.wen.model.entity.UserRoom;
 import com.wen.model.entity.GoodEntity;
 import com.wen.model.entity.RoomEntity;
 import com.wen.model.vo.*;
@@ -41,7 +41,7 @@ public class GoodServiceImpl implements GoodService {
 
     private final RoomMapper roomMapper;
 
-    private final AnchorRoomRelationMapper relationMapper;
+    private final UserRoomMapper relationMapper;
 
     private final RoleService roleService;
 
@@ -214,10 +214,10 @@ public class GoodServiceImpl implements GoodService {
         if (role == null || role != RoleTypeEnum.ANCHOR.getCode()) {
             throw new BusinessException("您还不是主播");
         }
-        List<AnchorRoomRelation> relations = relationMapper.selectList(new LambdaQueryWrapper<AnchorRoomRelation>()
-                .eq(AnchorRoomRelation::getAnchorId, userId)
-                .eq(AnchorRoomRelation::getDeleted, DeleteEnum.ACTIVE.getCode())
-                .orderByDesc(AnchorRoomRelation::getId));
+        List<UserRoom> relations = relationMapper.selectList(new LambdaQueryWrapper<UserRoom>()
+                .eq(UserRoom::getAnchorId, userId)
+                .eq(UserRoom::getDeleted, DeleteEnum.ACTIVE.getCode())
+                .orderByDesc(UserRoom::getId));
         if (relations.isEmpty()) {
             throw new BusinessException("请先创建直播间");
         }

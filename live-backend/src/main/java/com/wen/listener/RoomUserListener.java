@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RoomViewerListener {
+public class RoomUserListener {
 
     private static final String ROOM_TOPIC_PREFIX = "/topic/room/";
 

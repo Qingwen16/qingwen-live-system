@@ -8,7 +8,7 @@ import com.wen.common.exception.BusinessException;
 import com.wen.mapper.ChatMessageMapper;
 import com.wen.model.entity.ChatMessageEntity;
 import com.wen.model.entity.UserEntity;
-import com.wen.model.vo.ChatMessage;
+import com.wen.model.dto.ChatMessageDto;
 import com.wen.model.vo.ChatSendRequest;
 import com.wen.service.ChatService;
 import com.wen.service.UserService;
@@ -36,7 +36,7 @@ public class ChatServiceImpl implements ChatService {
     private final UserService userService;
 
     @Override
-    public ChatMessage sendMessage(Long userId, ChatSendRequest request) {
+    public ChatMessageDto sendMessage(Long userId, ChatSendRequest request) {
         if (request == null || request.getRoomId() == null) {
             throw new BusinessException("直播间ID不能为空");
         }
@@ -67,7 +67,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatMessage> queryHistory(Long roomId, Integer limit) {
+    public List<ChatMessageDto> queryHistory(Long roomId, Integer limit) {
         if (roomId == null) {
             throw new BusinessException("直播间ID不能为空");
         }
@@ -80,15 +80,15 @@ public class ChatServiceImpl implements ChatService {
                 .last("LIMIT " + size));
 
         // 倒序查出，转正序返回给前端
-        List<ChatMessage> messages = new ArrayList<>(entities.size());
+        List<ChatMessageDto> messages = new ArrayList<>(entities.size());
         for (int i = entities.size() - 1; i >= 0; i--) {
             messages.add(toMessage(entities.get(i)));
         }
         return messages;
     }
 
-    private ChatMessage toMessage(ChatMessageEntity entity) {
-        ChatMessage message = new ChatMessage();
+    private ChatMessageDto toMessage(ChatMessageEntity entity) {
+        ChatMessageDto message = new ChatMessageDto();
         BeanUtil.copyProperties(entity, message);
         return message;
     }
