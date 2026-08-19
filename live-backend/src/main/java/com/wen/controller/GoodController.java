@@ -29,7 +29,7 @@ public class GoodController {
      */
     @PostMapping("/create")
     @RequireRole({RoleTypeEnum.SUPER_ADMIN})
-    public Response<Long> createGood(@RequestBody GoodCreateRequest request) {
+    public Response<Long> createGood(@RequestBody GoodAddRequest request) {
         return Response.success(goodService.createGood(request), "新增商品成功");
     }
 
@@ -38,7 +38,7 @@ public class GoodController {
      */
     @PostMapping("/update")
     @RequireRole({RoleTypeEnum.SUPER_ADMIN})
-    public Response<Void> updateGood(@RequestBody GoodUpdateRequest request) {
+    public Response<Void> updateGood(@RequestBody GoodUdtRequest request) {
         goodService.updateGood(request);
         return Response.success(null, "更新商品成功");
     }
@@ -58,7 +58,7 @@ public class GoodController {
      */
     @PostMapping("/list")
     @RequireRole({RoleTypeEnum.SUPER_ADMIN})
-    public Response<List<GoodDto>> queryGoods(@RequestBody GoodQueryRequest request) {
+    public Response<List<GoodDto>> queryGoods(@RequestBody GoodGetRequest request) {
         return Response.success(goodService.queryGoods(request));
     }
 

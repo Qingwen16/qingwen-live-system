@@ -1,7 +1,7 @@
 package com.wen.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wen.model.entity.ChatMessageEntity;
+import com.wen.model.entity.MessageEntity;
 import org.apache.ibatis.annotations.Mapper;
 
 /**
@@ -10,5 +10,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @author : rjw
  */
 @Mapper
-public interface ChatMessageMapper extends BaseMapper<ChatMessageEntity> {
+public interface MessageMapper extends BaseMapper<MessageEntity> {
 }

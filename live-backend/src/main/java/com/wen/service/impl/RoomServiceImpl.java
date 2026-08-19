@@ -15,7 +15,7 @@ import com.wen.model.entity.RoomEntity;
 import com.wen.model.dto.RoomDto;
 import com.wen.model.vo.RoomIdRequest;
 import com.wen.model.vo.RoomOnlineCountVo;
-import com.wen.model.vo.RoomQueryRequest;
+import com.wen.model.vo.RoomGetRequest;
 import com.wen.model.vo.RoomRequest;
 import com.wen.service.RoleService;
 import com.wen.service.RoomService;
@@ -67,7 +67,7 @@ public class RoomServiceImpl implements RoomService {
         roomMapper.insert(room);
 
         UserRoom relation = new UserRoom();
-        relation.setAnchorId(userId);
+        relation.setUserId(userId);
         relation.setRoomId(room.getId());
         relationMapper.insert(relation);
 
@@ -160,7 +160,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<RoomDto> getRoomList(RoomQueryRequest request) {
+    public List<RoomDto> getRoomList(RoomGetRequest request) {
         LambdaQueryWrapper<RoomEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode())
                 .like(StrUtil.isNotEmpty(request.getTitle()), RoomEntity::getTitle, request.getTitle())
@@ -239,7 +239,7 @@ public class RoomServiceImpl implements RoomService {
         Long userId = currentUserId();
         checkAnchor(userId);
         Long count = relationMapper.selectCount(new LambdaQueryWrapper<UserRoom>()
-                .eq(UserRoom::getAnchorId, userId)
+                .eq(UserRoom::getUserId, userId)
                 .eq(UserRoom::getRoomId, room.getId())
                 .eq(UserRoom::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (count == null || count == 0) {

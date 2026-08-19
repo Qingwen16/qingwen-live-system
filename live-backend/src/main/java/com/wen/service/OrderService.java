@@ -1,7 +1,7 @@
 package com.wen.service;
 
-import com.wen.model.vo.OrderCreateRequest;
-import com.wen.model.vo.OrderQueryRequest;
+import com.wen.model.vo.OrderAddRequest;
+import com.wen.model.vo.OrderGetRequest;
 
 /**
  * @author : rjw
@@ -9,8 +9,8 @@ import com.wen.model.vo.OrderQueryRequest;
  */
 public interface OrderService {
 
-    String createOrder(OrderCreateRequest request);
+    String createOrder(OrderAddRequest request);
 
-    String queryOrder(OrderQueryRequest request);
+    String queryOrder(OrderGetRequest request);
 
 }

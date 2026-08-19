@@ -1,7 +1,7 @@
 package com.wen.controller;
 
 import com.wen.common.response.Response;
-import com.wen.model.vo.OrderCreateRequest;
+import com.wen.model.vo.OrderAddRequest;
 import com.wen.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +25,7 @@ public class OrderController {
      * 下单购买
      */
     @PostMapping
-    public Response<String> createOrder(@RequestBody OrderCreateRequest request) {
+    public Response<String> createOrder(@RequestBody OrderAddRequest request) {
         return Response.success(orderService.createOrder(request), "下单成功");
     }
 }

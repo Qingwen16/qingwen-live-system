@@ -4,7 +4,7 @@ import com.wen.common.annotation.RequireRole;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.response.Response;
 import com.wen.model.dto.RoleDto;
-import com.wen.model.vo.RoleQueryRequest;
+import com.wen.model.vo.RoleGetRequest;
 import com.wen.model.vo.RoleSetRequest;
 import com.wen.service.RoleService;
 import jakarta.validation.Valid;
@@ -32,7 +32,7 @@ public class RoleController {
      * 查询用户角色
      */
     @PostMapping("/query")
-    public Response<List<RoleDto>> queryRole(@RequestBody RoleQueryRequest request) {
+    public Response<List<RoleDto>> queryRole(@RequestBody RoleGetRequest request) {
         List<RoleDto> response = roleService.queryRole(request.getTypes());
         return Response.success(response);
     }

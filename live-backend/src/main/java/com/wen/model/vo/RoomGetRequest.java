@@ -9,7 +9,7 @@ import lombok.Data;
  * @author jwruan
  */
 @Data
-public class RoomQueryRequest {
+public class RoomGetRequest {
 
     /**
      * 直播间标题（模糊匹配）

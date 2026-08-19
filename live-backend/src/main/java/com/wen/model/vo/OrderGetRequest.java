@@ -7,7 +7,7 @@ import lombok.Data;
  * @date : 2026-04-09
  */
 @Data
-public class OrderQueryRequest {
+public class OrderGetRequest {
 
     /**
      * 用户手机号

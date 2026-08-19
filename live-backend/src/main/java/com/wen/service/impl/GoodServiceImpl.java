@@ -47,7 +47,7 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long createGood(GoodCreateRequest request) {
+    public Long createGood(GoodAddRequest request) {
         if (request.getName() == null || request.getName().isBlank()) {
             throw new BusinessException("商品名称不能为空");
         }
@@ -71,7 +71,7 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateGood(GoodUpdateRequest request) {
+    public void updateGood(GoodUdtRequest request) {
         if (request.getId() == null) {
             throw new BusinessException("商品ID不能为空");
         }
@@ -98,7 +98,7 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    public List<GoodDto> queryGoods(GoodQueryRequest request) {
+    public List<GoodDto> queryGoods(GoodGetRequest request) {
         LambdaQueryWrapper<GoodEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GoodEntity::getDeleted, DeleteEnum.ACTIVE.getCode())
                 .like(request.getName() != null && !request.getName().isBlank(),
@@ -215,7 +215,7 @@ public class GoodServiceImpl implements GoodService {
             throw new BusinessException("您还不是主播");
         }
         List<UserRoom> relations = relationMapper.selectList(new LambdaQueryWrapper<UserRoom>()
-                .eq(UserRoom::getAnchorId, userId)
+                .eq(UserRoom::getUserId, userId)
                 .eq(UserRoom::getDeleted, DeleteEnum.ACTIVE.getCode())
                 .orderByDesc(UserRoom::getId));
         if (relations.isEmpty()) {

@@ -9,8 +9,8 @@ import com.wen.mapper.OrderMapper;
 import com.wen.model.entity.AddressEntity;
 import com.wen.model.entity.GoodEntity;
 import com.wen.model.entity.OrderEntity;
-import com.wen.model.vo.OrderCreateRequest;
-import com.wen.model.vo.OrderQueryRequest;
+import com.wen.model.vo.OrderAddRequest;
+import com.wen.model.vo.OrderGetRequest;
 import com.wen.service.OrderService;
 import com.wen.utils.UserInfoContext;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String createOrder(OrderCreateRequest request) {
+    public String createOrder(OrderAddRequest request) {
         Long userId = currentUserId();
         if (request.getAddressId() == null || request.getGoodId() == null || request.getQuantity() == null) {
             throw new BusinessException("下单参数不能为空");
@@ -97,7 +97,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public String queryOrder(OrderQueryRequest request) {
+    public String queryOrder(OrderGetRequest request) {
         // TODO: 分页查询订单
         return null;
     }

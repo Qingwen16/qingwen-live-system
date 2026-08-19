@@ -12,7 +12,7 @@ import lombok.Data;
  * @date : 2026-04-09
  */
 @Data
-public class OrderCreateRequest {
+public class OrderAddRequest {
 
     /**
      * 收货地址ID（下单时选择的地址簿地址）

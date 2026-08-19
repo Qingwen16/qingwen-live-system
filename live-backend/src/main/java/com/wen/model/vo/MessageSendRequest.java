@@ -1,5 +1,7 @@
 package com.wen.model.vo;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 /**
@@ -8,7 +10,7 @@ import lombok.Data;
  * @author : rjw
  */
 @Data
-public class ChatSendRequest {
+public class MessageSendRequest {
 
     /**
      * 直播间 ID

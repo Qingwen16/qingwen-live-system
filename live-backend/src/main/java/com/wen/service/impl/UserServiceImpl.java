@@ -12,7 +12,9 @@ import com.wen.common.exception.BusinessException;
 import com.wen.common.response.PageResult;
 import com.wen.model.dto.UserDto;
 import com.wen.mapper.RoleMapper;
-import com.wen.model.vo.UserQueryRequest;
+import com.wen.model.vo.PhoneRequest;
+import com.wen.model.vo.UserIdRequest;
+import com.wen.model.vo.UserGetRequest;
 import com.wen.model.entity.UserEntity;
 import com.wen.model.entity.RoleEntity;
 import com.wen.mapper.UserMapper;
@@ -42,8 +44,6 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
-
-    private static final long MAX_PAGE_SIZE = 100;
 
     private final UserMapper userMapper;
 
@@ -87,21 +87,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResult<UserDto> queryByCondition(UserQueryRequest request) {
-        long pageNum = request.getPageNum() < 1 ? 1 : request.getPageNum();
-        long pageSize = request.getPageSize() < 1 ? 10 : request.getPageSize();
-        pageSize = Math.min(pageSize, MAX_PAGE_SIZE);
-        // deleted 不传时默认仅查未注销用户
-        Integer deleted = request.getDeleted() != null ? request.getDeleted() : DeleteEnum.ACTIVE.getCode();
+    public PageResult<UserDto> queryByCondition(UserGetRequest request) {
 
         LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.like(!StrUtil.isEmpty(request.getUsername()), UserEntity::getUsername, request.getUsername())
-                .eq(!StrUtil.isEmpty(request.getPhone()), UserEntity::getPhone, request.getPhone())
-                .eq(request.getGender() != null, UserEntity::getGender, request.getGender())
-                .eq(request.getStatus() != null, UserEntity::getStatus, request.getStatus())
-                .eq(UserEntity::getDeleted, deleted)
-                .ge(request.getCreateTimeStart() != null, UserEntity::getCreateTime, request.getCreateTimeStart())
-                .le(request.getCreateTimeEnd() != null, UserEntity::getCreateTime, request.getCreateTimeEnd())
+        wrapper.like(!StrUtil.isEmpty(request.getUsername()),
+                        UserEntity::getUsername, request.getUsername())
+                .eq(!StrUtil.isEmpty(request.getPhone()),
+                        UserEntity::getPhone, request.getPhone())
+                .eq(request.getGender() != null,
+                        UserEntity::getGender, request.getGender())
+                .eq(request.getStatus() != null,
+                        UserEntity::getStatus, request.getStatus())
+                .eq(request.getDeleted() != null,
+                        UserEntity::getDeleted, request.getDeleted())
+                .ge(request.getCreateTimeStart() != null,
+                        UserEntity::getCreateTime, request.getCreateTimeStart())
+                .le(request.getCreateTimeEnd() != null,
+                        UserEntity::getCreateTime, request.getCreateTimeEnd())
                 .orderByDesc(UserEntity::getCreateTime);
 
         // 角色过滤：角色在独立表，先查满足角色的 userId 集合再 IN
@@ -113,12 +115,13 @@ public class UserServiceImpl implements UserService {
                     .map(RoleEntity::getUserId)
                     .collect(Collectors.toSet());
             if (CollectionUtils.isEmpty(roleUserIdSet)) {
-                return PageResult.of(Collections.emptyList(), 0L, pageNum, pageSize);
+                return PageResult.of(Collections.emptyList(), 0L, request.getPageNum(), request.getPageSize());
             }
             wrapper.in(UserEntity::getUserId, roleUserIdSet);
         }
 
-        Page<UserEntity> page = userMapper.selectPage(new Page<>(pageNum, pageSize), wrapper);
+        Page<UserEntity> page = userMapper.selectPage(
+                new Page<>(request.getPageNum(), request.getPageSize()), wrapper);
 
         List<UserDto> dtoList = new ArrayList<>();
         for (UserEntity userInfo : page.getRecords()) {
@@ -133,18 +136,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto queryByPhone(String phone) {
-        if (phone == null || phone.isEmpty()) {
-            throw new BusinessException("输入参数不能为空");
-        }
+    public UserDto queryByPhone(PhoneRequest request) {
         UserEntity userInfo = userMapper.selectOne(new LambdaQueryWrapper<UserEntity>()
-                .eq(UserEntity::getPhone, phone));
+                .eq(UserEntity::getPhone, request.getPhone()));
         if (userInfo == null) {
             return null;
         }
         UserDto response = new UserDto();
         BeanUtil.copyProperties(userInfo, response);
-        log.info("根据手机号 [{}] 查询用户成功 [{}]", phone, response);
+        log.info("根据手机号 [{}] 查询用户成功 [{}]", request.getPhone(), response);
         return response;
     }
 
@@ -170,22 +170,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void disableUser(Long userId) {
-        checkUserExist(userId);
+    public void disableUser(UserIdRequest request) {
+        Long userId = request.getUserId();
+        if (queryByUserId(userId) == null) {
+            throw new BusinessException("用户不存在");
+        }
         updateUserStatus(userId, StatusEnum.DISABLED.getCode());
         log.info("禁用用户成功: userId={}", userId);
     }
 
     @Override
-    public void enableUser(Long userId) {
-        checkUserExist(userId);
+    public void enableUser(UserIdRequest request) {
+        Long userId = request.getUserId();
+        if (queryByUserId(userId) == null) {
+            throw new BusinessException("用户不存在");
+        }
         updateUserStatus(userId, StatusEnum.NORMAL.getCode());
         log.info("启用用户成功: userId={}", userId);
     }
 
     @Override
-    public void deleteUser(Long userId) {
-        checkUserExist(userId);
+    public void deleteUser(UserIdRequest request) {
+        Long userId = request.getUserId();
+        if (queryByUserId(userId) == null) {
+            throw new BusinessException("用户不存在");
+        }
         LambdaUpdateWrapper<UserEntity> wrapper = new LambdaUpdateWrapper<>();
         wrapper.eq(UserEntity::getUserId, userId)
                 .set(UserEntity::getDeleted, DeleteEnum.DELETED.getCode())
@@ -203,18 +212,6 @@ public class UserServiceImpl implements UserService {
                 .set(UserEntity::getStatus, status)
                 .set(UserEntity::getUpdateTime, System.currentTimeMillis());
         userMapper.update(null, wrapper);
-    }
-
-    /**
-     * 校验用户是否存在
-     */
-    private void checkUserExist(Long userId) {
-        if (userId == null) {
-            throw new BusinessException("用户ID不能为空");
-        }
-        if (queryByUserId(userId) == null) {
-            throw new BusinessException("用户不存在");
-        }
     }
 
     /**

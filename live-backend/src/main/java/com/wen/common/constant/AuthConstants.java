@@ -31,9 +31,4 @@ public class AuthConstants {
      */
     public static final int SMS_CODE_SEND_INTERVAL_SECONDS = 60;
 
-    /**
-     * 设置管理员的验证码
-     */
-    public static final String ADMIN_CHECK_CODE = "admin12345";
-
 }

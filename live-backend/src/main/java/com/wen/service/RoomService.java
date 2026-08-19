@@ -3,7 +3,7 @@ package com.wen.service;
 import com.wen.model.dto.RoomDto;
 import com.wen.model.vo.RoomIdRequest;
 import com.wen.model.vo.RoomOnlineCountVo;
-import com.wen.model.vo.RoomQueryRequest;
+import com.wen.model.vo.RoomGetRequest;
 import com.wen.model.vo.RoomRequest;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public interface RoomService {
     /**
      * 查询直播间列表（全量）
      */
-    List<RoomDto> getRoomList(RoomQueryRequest request);
+    List<RoomDto> getRoomList(RoomGetRequest request);
 
     /**
      * 查询直播间详情

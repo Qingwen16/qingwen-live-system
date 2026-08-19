@@ -6,8 +6,8 @@ import com.wen.common.response.PageResult;
 import com.wen.common.response.Response;
 import com.wen.model.entity.AddressEntity;
 import com.wen.model.vo.AddressIdRequest;
-import com.wen.model.vo.AddressQueryRequest;
-import com.wen.model.vo.AddressInsertRequest;
+import com.wen.model.vo.AddressGetRequest;
+import com.wen.model.vo.AddressAddRequest;
 import com.wen.service.AddressService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +46,7 @@ public class AddressController {
      * 新增收货地址
      */
     @PostMapping("/create")
-    public Response<Void> createAddress(@Valid @RequestBody AddressInsertRequest request) {
+    public Response<Void> createAddress(@Valid @RequestBody AddressAddRequest request) {
         addressService.createAddress(request);
         return Response.success(null, "地址已保存");
     }
@@ -55,7 +55,7 @@ public class AddressController {
      * 修改收货地址
      */
     @PostMapping("/update")
-    public Response<Void> updateAddress(@Valid @RequestBody AddressInsertRequest request) {
+    public Response<Void> updateAddress(@Valid @RequestBody AddressAddRequest request) {
         addressService.updateAddress(request);
         return Response.success(null, "地址已更新");
     }
@@ -77,7 +77,7 @@ public class AddressController {
     @PostMapping("/web/query")
     @RequireRole({RoleTypeEnum.SUPER_ADMIN})
     public Response<PageResult<AddressEntity>> webQueryAddress(
-            @RequestBody AddressQueryRequest request) {
+            @RequestBody AddressGetRequest request) {
         return Response.success(addressService.webQueryAddress(request));
     }
 

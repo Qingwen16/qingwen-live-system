@@ -1,8 +1,6 @@
 package com.wen.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.wen.common.enums.DeleteEnum;
 import lombok.Data;
 
@@ -11,9 +9,9 @@ import lombok.Data;
  *
  * @author : rjw
  */
-@TableName("chat_message_entity")
+@TableName("message_entity")
 @Data
-public class ChatMessageEntity {
+public class MessageEntity {
 
     /**
      * 主键 ID（数据库自增）
@@ -42,18 +40,20 @@ public class ChatMessageEntity {
     private String content;
 
     /**
-     * 创建时间（时间戳）
-     */
-    private Long createTime;
-
-    /**
-     * 更新时间（时间戳）
-     */
-    private Long updateTime;
-
-    /**
      * 是否删除 0-已删除 1-正常
      */
     private Integer deleted = DeleteEnum.ACTIVE.getCode();
+
+    /**
+     * 创建时间
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private Long createTime;
+
+    /**
+     * 更新时间
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Long updateTime;
 
 }

@@ -6,14 +6,13 @@ import com.wen.common.response.Response;
 import com.wen.model.dto.RoomDto;
 import com.wen.model.vo.RoomIdRequest;
 import com.wen.model.vo.RoomOnlineCountVo;
-import com.wen.model.vo.RoomQueryRequest;
+import com.wen.model.vo.RoomGetRequest;
 import com.wen.model.vo.RoomRequest;
 import com.wen.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -81,7 +80,7 @@ public class RoomController {
      * APP查询直播间列表
      */
     @PostMapping("/getRoomList")
-    public Response<List<RoomDto>> getRoomList(@RequestBody RoomQueryRequest request) {
+    public Response<List<RoomDto>> getRoomList(@RequestBody RoomGetRequest request) {
         return Response.success(roomService.getRoomList(request));
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
  * @author : rjw
  */
 @Data
-public class RoleQueryRequest {
+public class RoleGetRequest {
 
     /**
      * 角色类型列表 {@link com.wen.common.enums.RoleTypeEnum}

@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * 新增商品请求
  */
 @Data
-public class GoodCreateRequest {
+public class GoodAddRequest {
     /**
      * 货物代码
      */

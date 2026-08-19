@@ -1,6 +1,8 @@
 package com.wen.service;
 
-import com.wen.model.vo.UserQueryRequest;
+import com.wen.model.vo.PhoneRequest;
+import com.wen.model.vo.UserIdRequest;
+import com.wen.model.vo.UserGetRequest;
 import com.wen.model.entity.UserEntity;
 import com.wen.model.dto.UserDto;
 import com.wen.common.response.PageResult;
@@ -24,12 +26,12 @@ public interface UserService {
     /**
      * 根据 查询条件 分页获取用户信息（含角色）
      */
-    PageResult<UserDto> queryByCondition(UserQueryRequest request);
+    PageResult<UserDto> queryByCondition(UserGetRequest request);
 
     /**
      * 根据 手机号 获取用户信息
      */
-    UserDto queryByPhone(String phone);
+    UserDto queryByPhone(PhoneRequest request);
 
     /**
      * 根据 用户ID 获取用户信息
@@ -44,15 +46,15 @@ public interface UserService {
     /**
      * 禁用用户
      */
-    void disableUser(Long userId);
+    void disableUser(UserIdRequest request);
 
     /**
      * 启用用户
      */
-    void enableUser(Long userId);
+    void enableUser(UserIdRequest request);
 
     /**
      * 注销用户（软删除）
      */
-    void deleteUser(Long userId);
+    void deleteUser(UserIdRequest request);
 }

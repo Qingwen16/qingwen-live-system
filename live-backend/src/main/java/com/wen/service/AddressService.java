@@ -3,8 +3,8 @@ package com.wen.service;
 import com.wen.common.response.PageResult;
 import com.wen.model.entity.AddressEntity;
 import com.wen.model.vo.AddressIdRequest;
-import com.wen.model.vo.AddressQueryRequest;
-import com.wen.model.vo.AddressInsertRequest;
+import com.wen.model.vo.AddressGetRequest;
+import com.wen.model.vo.AddressAddRequest;
 
 import java.util.List;
 
@@ -24,12 +24,12 @@ public interface AddressService {
     /**
      * 新增收货地址
      */
-    void createAddress(AddressInsertRequest request);
+    void createAddress(AddressAddRequest request);
 
     /**
      * 修改收货地址
      */
-    void updateAddress(AddressInsertRequest request);
+    void updateAddress(AddressAddRequest request);
 
     /**
      * 删除自己的收货地址
@@ -39,7 +39,7 @@ public interface AddressService {
     /**
      * 分页查询地址（管理端）
      */
-    PageResult<AddressEntity> webQueryAddress(AddressQueryRequest request);
+    PageResult<AddressEntity> webQueryAddress(AddressGetRequest request);
 
     /**
      * 强制删除地址（管理端）
