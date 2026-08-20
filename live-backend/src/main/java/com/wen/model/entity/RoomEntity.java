@@ -18,8 +18,8 @@ public class RoomEntity {
     /**
      * 直播间 ID
      */
-    @TableId(type = IdType.AUTO)
-    private Long id;
+    @TableId(type = IdType.INPUT)
+    private Long roomId;
 
     /**
      * 推流名（唯一标识，腾讯云 StreamName）

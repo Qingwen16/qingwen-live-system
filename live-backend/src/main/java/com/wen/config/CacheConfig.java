@@ -25,6 +25,11 @@ public class CacheConfig {
     private TimeUnit defaultTimeUnit = TimeUnit.SECONDS;
 
     /**
+     * 角色缓存过期时间（秒）
+     */
+    private long timeoutRole = 30 * 60L;
+
+    /**
      * 项目 key 前缀
      */
     public String prefix() {
@@ -60,10 +65,10 @@ public class CacheConfig {
     }
 
     /**
-     * 设置AccessToken的黑名单
+     * 用户角色缓存的 Key
      */
-    public String getKeyAccessTokenBlackList(String accessTokenJti) {
-        return prefix() + "AccessTokenBlackList:" + accessTokenJti;
+    public String getKeyUserRole(Long userId) {
+        return prefix() + "UserRole:" + userId;
     }
 
 }

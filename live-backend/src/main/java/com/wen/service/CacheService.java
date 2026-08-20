@@ -56,4 +56,19 @@ public interface CacheService {
      */
     void delSmsCodeRetryCount(String phone);
 
+    /**
+     * 缓存用户角色（role 为 null 时不缓存）
+     */
+    void setUserRoleCache(Long userId, Integer role);
+
+    /**
+     * 获取缓存的用户角色，未命中返回 null
+     */
+    Integer getUserRoleCache(Long userId);
+
+    /**
+     * 删除用户角色缓存（角色变更后调用）
+     */
+    void delUserRoleCache(Long userId);
+
 }

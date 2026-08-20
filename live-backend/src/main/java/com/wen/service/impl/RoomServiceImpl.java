@@ -8,6 +8,7 @@ import com.wen.common.enums.DeleteEnum;
 import com.wen.common.enums.RoomStatusEnum;
 import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.exception.BusinessException;
+import com.wen.common.generator.RoomIdGenerator;
 import com.wen.mapper.UserRoomMapper;
 import com.wen.mapper.RoomMapper;
 import com.wen.model.entity.UserRoom;
@@ -45,78 +46,72 @@ public class RoomServiceImpl implements RoomService {
 
     private final RoleService roleService;
 
+    private final RoomIdGenerator roomIdGenerator;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public RoomDto createRoom(RoomRequest request) {
-        if (StrUtil.isEmpty(request.getTitle())) {
-            throw new BusinessException("直播间标题不能为空");
-        }
         Long userId = currentUserId();
         checkAnchor(userId);
 
-        long currentTime = System.currentTimeMillis();
+        Long roomId = roomIdGenerator.generate();
+
         RoomEntity room = new RoomEntity();
+        room.setRoomId(roomId);
         room.setStreamName(generateStreamName());
         room.setTitle(request.getTitle());
         room.setCurrentViewers(0);
         room.setTotalLiveHours(0L);
         room.setTotalIncome(new BigDecimal("0.00"));
         room.setStatus(RoomStatusEnum.NOT_STARTED.getCode());
-        room.setCreateTime(currentTime);
-        room.setUpdateTime(currentTime);
         roomMapper.insert(room);
 
         UserRoom relation = new UserRoom();
         relation.setUserId(userId);
-        relation.setRoomId(room.getId());
+        relation.setRoomId(roomId);
         relationMapper.insert(relation);
 
         log.info("主播 [{}] 创建直播间成功: streamName={}", userId, room.getStreamName());
-        return toDto(room);
+        return buildRoomDto(room);
     }
 
     @Override
-    public RoomDto updateRoom(RoomRequest request) {
-        if (request.getId() == null) {
-            throw new BusinessException("直播间ID不能为空");
-        }
-        RoomEntity room = getExistRoom(request.getId());
+    public void updateRoom(RoomRequest request) {
+        RoomEntity room = getExistRoom(request.getRoomId());
         checkOwnership(room);
 
         LambdaUpdateWrapper<RoomEntity> wrapper = new LambdaUpdateWrapper<>();
-        wrapper.eq(RoomEntity::getId, request.getId());
+        wrapper.eq(RoomEntity::getRoomId, request.getRoomId());
         if (StrUtil.isNotEmpty(request.getTitle())) {
             wrapper.set(RoomEntity::getTitle, request.getTitle());
         }
         wrapper.set(RoomEntity::getUpdateTime, System.currentTimeMillis());
         roomMapper.update(null, wrapper);
 
-        log.info("直播间 [{}] 更新成功", request.getId());
+        log.info("直播间 [{}] 更新成功", request.getRoomId());
         RoomIdRequest roomIdRequest = new RoomIdRequest();
-        roomIdRequest.setRoomId(request.getId());
-        return getRoomInfo(roomIdRequest);
+        roomIdRequest.setRoomId(request.getRoomId());
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public RoomDto deleteRoom(RoomRequest request) {
-        if (request.getId() == null) {
+    public void deleteRoom(RoomRequest request) {
+        if (request.getRoomId() == null) {
             throw new BusinessException("直播间ID不能为空");
         }
-        RoomEntity room = getExistRoom(request.getId());
+        RoomEntity room = getExistRoom(request.getRoomId());
         checkOwnership(room);
 
         roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, request.getId())
+                .eq(RoomEntity::getRoomId, request.getRoomId())
                 .set(RoomEntity::getDeleted, DeleteEnum.DELETED.getCode())
                 .set(RoomEntity::getUpdateTime, System.currentTimeMillis()));
         // 直播间删除时同步逻辑删除关联关系，避免残留无效关联
         relationMapper.update(null, new LambdaUpdateWrapper<UserRoom>()
-                .eq(UserRoom::getRoomId, request.getId())
+                .eq(UserRoom::getRoomId, request.getRoomId())
                 .eq(UserRoom::getDeleted, DeleteEnum.ACTIVE.getCode())
                 .set(UserRoom::getDeleted, DeleteEnum.DELETED.getCode()));
-        log.info("直播间 [{}] 已删除", request.getId());
-        return toDto(room);
+        log.info("直播间 [{}] 已删除", request.getRoomId());
     }
 
     @Override
@@ -132,7 +127,7 @@ public class RoomServiceImpl implements RoomService {
         }
 
         roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, roomId)
+                .eq(RoomEntity::getRoomId, roomId)
                 .set(RoomEntity::getStatus, RoomStatusEnum.LIVING.getCode())
                 .set(RoomEntity::getCurrentViewers, 0)
                 .set(RoomEntity::getStartTime, System.currentTimeMillis())
@@ -151,7 +146,7 @@ public class RoomServiceImpl implements RoomService {
         checkOwnership(room);
 
         roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, roomId)
+                .eq(RoomEntity::getRoomId, roomId)
                 .set(RoomEntity::getStatus, RoomStatusEnum.CLOSED.getCode())
                 .set(RoomEntity::getEndTime, System.currentTimeMillis())
                 .set(RoomEntity::getUpdateTime, System.currentTimeMillis()));
@@ -169,7 +164,7 @@ public class RoomServiceImpl implements RoomService {
 
         List<RoomEntity> rooms = roomMapper.selectList(wrapper);
         log.info("查询直播间列表: size={}", rooms.size());
-        return rooms.stream().map(this::toDto).toList();
+        return rooms.stream().map(this::buildRoomDto).toList();
     }
 
     @Override
@@ -177,7 +172,7 @@ public class RoomServiceImpl implements RoomService {
         if (request.getRoomId() == null) {
             throw new BusinessException("直播间ID不能为空");
         }
-        return toDto(getExistRoom(request.getRoomId()));
+        return buildRoomDto(getExistRoom(request.getRoomId()));
     }
 
     @Override
@@ -187,7 +182,7 @@ public class RoomServiceImpl implements RoomService {
         }
         // 用 SQL 自增，避免并发下读-改-写导致计数不准
         roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, roomId)
+                .eq(RoomEntity::getRoomId, roomId)
                 .setSql("current_viewers = current_viewers + 1"));
     }
 
@@ -197,7 +192,7 @@ public class RoomServiceImpl implements RoomService {
             return;
         }
         roomMapper.update(null, new LambdaUpdateWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, roomId)
+                .eq(RoomEntity::getRoomId, roomId)
                 .setSql("current_viewers = GREATEST(current_viewers - 1, 0)"));
     }
 
@@ -206,10 +201,10 @@ public class RoomServiceImpl implements RoomService {
         // 只查询 id 和 current_viewers 两列，降低轮询 payload 与 DB 开销
         List<RoomEntity> rooms = roomMapper.selectList(new LambdaQueryWrapper<RoomEntity>()
                 .eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode())
-                .select(RoomEntity::getId, RoomEntity::getCurrentViewers));
+                .select(RoomEntity::getRoomId, RoomEntity::getCurrentViewers));
         return rooms.stream().map(room -> {
             RoomOnlineCountVo vo = new RoomOnlineCountVo();
-            vo.setRoomId(room.getId());
+            vo.setRoomId(room.getRoomId());
             vo.setCurrentViewers(room.getCurrentViewers());
             return vo;
         }).toList();
@@ -220,7 +215,7 @@ public class RoomServiceImpl implements RoomService {
      */
     private RoomEntity getExistRoom(Long roomId) {
         RoomEntity room = roomMapper.selectOne(new LambdaQueryWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, roomId)
+                .eq(RoomEntity::getRoomId, roomId)
                 .eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (room == null) {
             throw new BusinessException("直播间不存在");
@@ -240,7 +235,7 @@ public class RoomServiceImpl implements RoomService {
         checkAnchor(userId);
         Long count = relationMapper.selectCount(new LambdaQueryWrapper<UserRoom>()
                 .eq(UserRoom::getUserId, userId)
-                .eq(UserRoom::getRoomId, room.getId())
+                .eq(UserRoom::getRoomId, room.getRoomId())
                 .eq(UserRoom::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (count == null || count == 0) {
             throw new BusinessException("无权操作该直播间");
@@ -265,7 +260,7 @@ public class RoomServiceImpl implements RoomService {
         return userId;
     }
 
-    private RoomDto toDto(RoomEntity room) {
+    private RoomDto buildRoomDto(RoomEntity room) {
         RoomDto dto = new RoomDto();
         BeanUtil.copyProperties(room, dto);
         return dto;
@@ -276,13 +271,15 @@ public class RoomServiceImpl implements RoomService {
      */
     private String generateStreamName() {
         for (int i = 0; i < 3; i++) {
-            String streamName = String.valueOf(System.currentTimeMillis() * 1000 + new Random().nextInt(1000));
-            Long count = roomMapper.selectCount(new LambdaQueryWrapper<RoomEntity>()
-                    .eq(RoomEntity::getStreamName, streamName));
+            long name = System.currentTimeMillis() * 1000 + new Random().nextInt(1000);
+            String streamName = String.valueOf(name);
+            LambdaQueryWrapper<RoomEntity> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(RoomEntity::getStreamName, streamName);
+            Long count = roomMapper.selectCount(wrapper);
             if (count == null || count == 0) {
                 return streamName;
             }
-            log.warn("推流名 [{}] 已存在，重新生成", streamName);
+            log.info("推流名 [{}] 已存在，重新生成", streamName);
         }
         throw new BusinessException("推流名生成失败，请重试");
     }

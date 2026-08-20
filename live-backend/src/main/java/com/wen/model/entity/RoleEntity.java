@@ -1,8 +1,6 @@
 package com.wen.model.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 /**
@@ -15,9 +13,14 @@ import lombok.Data;
 public class RoleEntity {
 
     /**
-     * 用户ID，复用作为角色表主键（一个用户一条角色记录）
+     * 主键ID（自增）
      */
-    @TableId(type = IdType.INPUT)
+    @TableId(type = IdType.AUTO)
+    private Long id;
+
+    /**
+     * 用户ID（唯一索引，一个用户一条角色记录）
+     */
     private Long userId;
 
     /**
@@ -26,13 +29,20 @@ public class RoleEntity {
     private Integer role;
 
     /**
-     * 创建时间（时间戳）
+     * 删除标记 {@link com.wen.common.enums.DeleteEnum} 0-已删除 1-未删除
      */
+    private Integer deleted;
+
+    /**
+     * 创建时间
+     */
+    @TableField(fill = FieldFill.INSERT)
     private Long createTime;
 
     /**
-     * 更新时间（时间戳）
+     * 更新时间
      */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
     private Long updateTime;
 
 }

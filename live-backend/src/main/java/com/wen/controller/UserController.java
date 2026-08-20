@@ -41,7 +41,7 @@ public class UserController {
      */
     @PostMapping("/queryByPhone")
     public Response<UserDto> queryByPhone(@Valid @RequestBody PhoneRequest request) {
-        UserDto response = userService.queryByPhone(request);
+        UserDto response = userService.queryByPhone(request.getPhone());
         return Response.success(response);
     }
 

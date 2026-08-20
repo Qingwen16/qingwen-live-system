@@ -1,8 +1,8 @@
 package com.wen.service;
 
+import com.wen.common.response.PageResult;
 import com.wen.model.dto.RoleDto;
-
-import java.util.List;
+import com.wen.model.vo.RoleGetRequest;
 
 /**
  * @author : rjw
@@ -11,9 +11,9 @@ import java.util.List;
 public interface RoleService {
 
     /**
-     * 根据类型查询所用角色
+     * 分页查询用户角色
      */
-    List<RoleDto> queryRole(List<Integer> types);
+    PageResult<RoleDto> queryRole(RoleGetRequest request);
 
     /**
      * 根据用户 ID 查询角色类型
@@ -21,11 +21,8 @@ public interface RoleService {
     Integer queryRoleByUserId(Long userId);
 
     /**
-     * 设置用户角色
-     *
-     * @param userId 用户ID
-     * @param role   角色类型 code，取值见 {@link com.wen.common.enums.RoleTypeEnum}
+     * 设置用户角色（存在则更新、不存在则插入）
      */
-    String setRole(Long userId, Integer role);
+    void setRole(Long userId, Integer role);
 
 }

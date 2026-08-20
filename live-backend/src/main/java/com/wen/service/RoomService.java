@@ -23,12 +23,12 @@ public interface RoomService {
     /**
      * 更新直播间信息（主播只能更新自己的直播间）
      */
-    RoomDto updateRoom(RoomRequest request);
+    void updateRoom(RoomRequest request);
 
     /**
      * 删除直播间（主播只能删除自己的直播间）
      */
-    RoomDto deleteRoom(RoomRequest request);
+    void deleteRoom(RoomRequest request);
 
     /**
      * 开启直播间（主播开启自己的直播间，管理员可开启任意直播间）

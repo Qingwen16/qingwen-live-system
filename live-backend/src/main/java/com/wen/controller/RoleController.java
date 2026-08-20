@@ -2,6 +2,7 @@ package com.wen.controller;
 
 import com.wen.common.annotation.RequireRole;
 import com.wen.common.enums.RoleTypeEnum;
+import com.wen.common.response.PageResult;
 import com.wen.common.response.Response;
 import com.wen.model.dto.RoleDto;
 import com.wen.model.vo.RoleGetRequest;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @author : rjw
@@ -32,8 +31,8 @@ public class RoleController {
      * 查询用户角色
      */
     @PostMapping("/query")
-    public Response<List<RoleDto>> queryRole(@RequestBody RoleGetRequest request) {
-        List<RoleDto> response = roleService.queryRole(request.getTypes());
+    public Response<PageResult<RoleDto>> queryRole(@Valid @RequestBody RoleGetRequest request) {
+        PageResult<RoleDto> response = roleService.queryRole(request);
         return Response.success(response);
     }
 
@@ -41,9 +40,9 @@ public class RoleController {
      * 设置用户角色
      */
     @PostMapping("/set")
-    public Response<String> setRole(@Valid @RequestBody RoleSetRequest request) {
-        String response = roleService.setRole(request.getUserId(), request.getRole());
-        return Response.success(response);
+    public Response<Void> setRole(@Valid @RequestBody RoleSetRequest request) {
+        roleService.setRole(request.getUserId(), request.getRole());
+        return Response.success();
     }
 
 }

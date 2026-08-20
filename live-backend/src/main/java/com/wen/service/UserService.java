@@ -17,7 +17,6 @@ import java.util.Set;
  */
 public interface UserService {
 
-
     /**
      * 用户注册（手机等第三方注册）
      */
@@ -31,17 +30,12 @@ public interface UserService {
     /**
      * 根据 手机号 获取用户信息
      */
-    UserDto queryByPhone(PhoneRequest request);
+    UserDto queryByPhone(String phone);
 
     /**
      * 根据 用户ID 获取用户信息
      */
     UserEntity queryByUserId(Long userId);
-
-    /**
-     * 根据用户ID批量查询用户信息
-     */
-    List<UserEntity> queryByUserIdSet(Set<Long> userIdSet);
 
     /**
      * 禁用用户

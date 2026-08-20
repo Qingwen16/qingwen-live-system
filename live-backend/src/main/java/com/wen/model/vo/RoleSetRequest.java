@@ -20,6 +20,7 @@ public class RoleSetRequest {
     /**
      * 角色类型 {@link com.wen.common.enums.RoleTypeEnum} 0-用户 1-主播 2-管理员 3-系统管理员
      */
+    @NotNull(message = "角色类型不能为空")
     private Integer role;
 
 }

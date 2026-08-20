@@ -122,4 +122,33 @@ public class CacheServiceImpl implements CacheService {
         redisTemplate.delete(tokenKey);
     }
 
+    /**
+     * 缓存用户角色（role 为 null 时不缓存）
+     */
+    @Override
+    public void setUserRoleCache(Long userId, Integer role) {
+        if (role == null) {
+            return;
+        }
+        redisTemplate.opsForValue().set(cacheConfig.getKeyUserRole(userId), role,
+                cacheConfig.getTimeoutRole(), cacheConfig.getDefaultTimeUnit());
+    }
+
+    /**
+     * 获取缓存的用户角色，未命中返回 null
+     */
+    @Override
+    public Integer getUserRoleCache(Long userId) {
+        Object value = redisTemplate.opsForValue().get(cacheConfig.getKeyUserRole(userId));
+        return value == null ? null : (Integer) value;
+    }
+
+    /**
+     * 删除用户角色缓存
+     */
+    @Override
+    public void delUserRoleCache(Long userId) {
+        redisTemplate.delete(cacheConfig.getKeyUserRole(userId));
+    }
+
 }

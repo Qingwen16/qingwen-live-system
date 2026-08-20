@@ -136,15 +136,15 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDto queryByPhone(PhoneRequest request) {
+    public UserDto queryByPhone(String phone) {
         UserEntity userInfo = userMapper.selectOne(new LambdaQueryWrapper<UserEntity>()
-                .eq(UserEntity::getPhone, request.getPhone()));
+                .eq(UserEntity::getPhone, phone));
         if (userInfo == null) {
             return null;
         }
         UserDto response = new UserDto();
         BeanUtil.copyProperties(userInfo, response);
-        log.info("根据手机号 [{}] 查询用户成功 [{}]", request.getPhone(), response);
+        log.info("根据手机号 [{}] 查询用户成功 [{}]", phone, response);
         return response;
     }
 
@@ -154,19 +154,6 @@ public class UserServiceImpl implements UserService {
                 .eq(UserEntity::getUserId, userId));
         log.info("根据用户ID [{}] 查询用户成功 [{}]", userId, userInfo);
         return userInfo;
-    }
-
-    @Override
-    public List<UserEntity> queryByUserIdSet(Set<Long> userIdSet) {
-        if (CollectionUtils.isEmpty(userIdSet)) {
-            log.info("输入的查询用户ID数量为空");
-            return Collections.emptyList();
-        }
-        LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<>();
-        wrapper.in(UserEntity::getUserId, userIdSet);
-        List<UserEntity> infoList = userMapper.selectList(wrapper);
-        log.info("查询到的用户信息数量: [{}]", infoList.size());
-        return infoList;
     }
 
     @Override
