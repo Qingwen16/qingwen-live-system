@@ -14,12 +14,12 @@ public interface GoodService {
     /**
      * 新增商品（默认未上架）
      */
-    Long createGood(GoodAddRequest request);
+    Long createGood(GoodCreateRequest request);
 
     /**
      * 修改商品
      */
-    void updateGood(GoodUdtRequest request);
+    void updateGood(GoodUpdateRequest request);
 
     /**
      * 删除商品（软删除）
@@ -29,7 +29,7 @@ public interface GoodService {
     /**
      * 查询商品列表（全量，支持筛选）
      */
-    List<GoodDto> queryGoods(GoodGetRequest request);
+    List<GoodDto> queryGoods(GoodQueryRequest request);
 
     /**
      * 查询商品列表（全量，支持筛选）

@@ -10,7 +10,7 @@ import lombok.Data;
  * @author : rjw
  */
 @Data
-public class MessageGetWebRequest {
+public class MessageQueryWebRequest {
 
     /**
      * 页码，从 1 开始

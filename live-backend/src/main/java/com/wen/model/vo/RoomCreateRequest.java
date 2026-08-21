@@ -10,12 +10,23 @@ import lombok.Data;
  * @author jwruan
  */
 @Data
-public class RoomRequest {
+public class RoomCreateRequest {
 
     /**
-     * 直播间 ID（更新时使用）
+     * 主播 ID
      */
-    @NotNull(message = "直播间ID不能为空")
+    @NotNull(message = "主播ID不能为空")
+    private Long userId;
+
+    /**
+     * 直播间ID是否随机
+     */
+    @NotNull(message = "需要确认是否使用随机直播间ID")
+    private Integer isRandom;
+
+    /**
+     * 直播间 ID
+     */
     private Long roomId;
 
     /**

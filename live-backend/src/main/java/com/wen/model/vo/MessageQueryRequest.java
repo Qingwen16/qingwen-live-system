@@ -11,7 +11,7 @@ import lombok.Data;
  * @author : rjw
  */
 @Data
-public class MessageGetRequest {
+public class MessageQueryRequest {
 
     /**
      * 直播间 ID

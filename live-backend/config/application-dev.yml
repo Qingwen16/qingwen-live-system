@@ -44,3 +44,15 @@ jwt:
   secret: myVeryLongSecretKeyForJWT123456789012345678901234567890
   access-token-timeout: 7200 # 2小时（秒）
   refresh-token-timeout: 604800  # 7天（秒）
+
+# 腾讯云直播（CSS）推拉流配置
+live:
+  stream:
+    push-domain: push.example.com   # 推流域名（待申请，先占位）
+    play-domain: play.example.com   # 播放域名（待申请，先占位）
+    app-name: live
+    push-key: ""                    # 推流鉴权 Key（控制台生成，待申请）
+    play-key: ""                    # 播放鉴权 Key（可选，开启播放鉴权时才需要）
+    push-auth-expire-seconds: 86400 # 推流鉴权有效期（秒）
+    play-auth-enabled: false        # 播放鉴权开关
+    play-auth-expire-seconds: 86400 # 播放鉴权有效期（秒）

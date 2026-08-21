@@ -11,7 +11,7 @@ import lombok.Data;
  * @date : 2026-04-09
  */
 @Data
-public class AddressGetRequest {
+public class AddressQueryRequest {
 
     /**
      * 页码，从 1 开始

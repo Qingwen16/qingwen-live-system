@@ -12,7 +12,6 @@ import java.math.BigDecimal;
 
 /**
  * 订单信息实体类
- *
  * 设计理念：订单保存收货地址「快照」，而非引用地址表。
  * 下单时将收货人、电话、完整地址复制进订单，订单与地址表彻底解耦，
  * 用户后续修改或删除地址簿不影响历史订单。
@@ -26,15 +25,10 @@ import java.math.BigDecimal;
 public class OrderEntity {
 
     /**
-     * 主键ID
+     * 订单ID
      */
-    @TableId(type = IdType.AUTO)
-    private Long id;
-
-    /**
-     * 订单号
-     */
-    private String orderNo;
+    @TableId(type = IdType.ASSIGN_ID)
+    private Long orderId;
 
     /**
      * 用户ID
@@ -57,9 +51,9 @@ public class OrderEntity {
     private Integer quantity;
 
     /**
-     * 订单金额
+     * 购买金额
      */
-    private BigDecimal orderAmount;
+    private BigDecimal amount;
 
     /**
      * 订单状态：0-待支付，1-已支付，2-已取消，3-已完成

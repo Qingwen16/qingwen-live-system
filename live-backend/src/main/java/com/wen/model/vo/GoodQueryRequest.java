@@ -6,7 +6,7 @@ import lombok.Data;
  * 商品分页查询请求
  */
 @Data
-public class GoodGetRequest {
+public class GoodQueryRequest {
 
     /**
      * 货物名称（模糊）

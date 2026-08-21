@@ -2,7 +2,7 @@ package com.wen.service;
 
 import com.wen.common.response.PageResult;
 import com.wen.model.dto.RoleDto;
-import com.wen.model.vo.RoleGetRequest;
+import com.wen.model.vo.RoleQueryRequest;
 
 /**
  * @author : rjw
@@ -13,7 +13,7 @@ public interface RoleService {
     /**
      * 分页查询用户角色
      */
-    PageResult<RoleDto> queryRole(RoleGetRequest request);
+    PageResult<RoleDto> queryRole(RoleQueryRequest request);
 
     /**
      * 根据用户 ID 查询角色类型

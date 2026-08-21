@@ -47,7 +47,7 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long createGood(GoodAddRequest request) {
+    public Long createGood(GoodCreateRequest request) {
         if (request.getName() == null || request.getName().isBlank()) {
             throw new BusinessException("商品名称不能为空");
         }
@@ -71,7 +71,7 @@ public class GoodServiceImpl implements GoodService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateGood(GoodUdtRequest request) {
+    public void updateGood(GoodUpdateRequest request) {
         if (request.getId() == null) {
             throw new BusinessException("商品ID不能为空");
         }
@@ -98,7 +98,7 @@ public class GoodServiceImpl implements GoodService {
     }
 
     @Override
-    public List<GoodDto> queryGoods(GoodGetRequest request) {
+    public List<GoodDto> queryGoods(GoodQueryRequest request) {
         LambdaQueryWrapper<GoodEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(GoodEntity::getDeleted, DeleteEnum.ACTIVE.getCode())
                 .like(request.getName() != null && !request.getName().isBlank(),
@@ -109,6 +109,7 @@ public class GoodServiceImpl implements GoodService {
 
         return goodMapper.selectList(wrapper).stream().map(this::toDto).toList();
     }
+
 
     @Override
     public List<GoodDto> queryAppGoods() {
@@ -177,16 +178,16 @@ public class GoodServiceImpl implements GoodService {
             throw new BusinessException("商品缺货，无法挂载");
         }
         Long mountedCount = goodMapper.selectCount(new LambdaQueryWrapper<GoodEntity>()
-                .eq(GoodEntity::getRoomId, room.getId())
+                .eq(GoodEntity::getRoomId, room.getRoomId())
                 .eq(GoodEntity::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (mountedCount != null && mountedCount >= MAX_ROOM_GOODS) {
             throw new BusinessException("一个直播间最多挂载" + MAX_ROOM_GOODS + "个商品");
         }
         goodMapper.update(null, new LambdaUpdateWrapper<GoodEntity>()
                 .eq(GoodEntity::getId, goodId)
-                .set(GoodEntity::getRoomId, room.getId())
+                .set(GoodEntity::getRoomId, room.getRoomId())
                 .set(GoodEntity::getUpdateTime, System.currentTimeMillis()));
-        log.info("商品挂载到直播间成功: goodId={}, roomId={}", goodId, room.getId());
+        log.info("商品挂载到直播间成功: goodId={}, roomId={}", goodId, room.getRoomId());
     }
 
     @Override
@@ -195,14 +196,14 @@ public class GoodServiceImpl implements GoodService {
         Long goodId = request.getGoodId();
         RoomEntity room = getAnchorRoom();
         GoodEntity good = getExistGood(goodId);
-        if (!room.getId().equals(good.getRoomId())) {
+        if (!room.getRoomId().equals(good.getRoomId())) {
             throw new BusinessException("该商品未挂载到您的直播间");
         }
         goodMapper.update(null, new LambdaUpdateWrapper<GoodEntity>()
                 .eq(GoodEntity::getId, goodId)
                 .set(GoodEntity::getRoomId, null)
                 .set(GoodEntity::getUpdateTime, System.currentTimeMillis()));
-        log.info("商品从直播间移除成功: goodId={}, roomId={}", goodId, room.getId());
+        log.info("商品从直播间移除成功: goodId={}, roomId={}", goodId, room.getRoomId());
     }
 
     /**
@@ -222,7 +223,7 @@ public class GoodServiceImpl implements GoodService {
             throw new BusinessException("请先创建直播间");
         }
         RoomEntity room = roomMapper.selectOne(new LambdaQueryWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, relations.get(0).getRoomId())
+                .eq(RoomEntity::getRoomId, relations.get(0).getRoomId())
                 .eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (room == null) {
             throw new BusinessException("直播间不存在");
@@ -262,7 +263,7 @@ public class GoodServiceImpl implements GoodService {
             return;
         }
         RoomEntity room = roomMapper.selectOne(new LambdaQueryWrapper<RoomEntity>()
-                .eq(RoomEntity::getId, roomId)
+                .eq(RoomEntity::getRoomId, roomId)
                 .eq(RoomEntity::getDeleted, DeleteEnum.ACTIVE.getCode()));
         if (room == null) {
             throw new BusinessException("直播间不存在");

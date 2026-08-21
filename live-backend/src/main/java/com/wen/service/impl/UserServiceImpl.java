@@ -12,9 +12,8 @@ import com.wen.common.exception.BusinessException;
 import com.wen.common.response.PageResult;
 import com.wen.model.dto.UserDto;
 import com.wen.mapper.RoleMapper;
-import com.wen.model.vo.PhoneRequest;
 import com.wen.model.vo.UserIdRequest;
-import com.wen.model.vo.UserGetRequest;
+import com.wen.model.vo.UserQueryRequest;
 import com.wen.model.entity.UserEntity;
 import com.wen.model.entity.RoleEntity;
 import com.wen.mapper.UserMapper;
@@ -87,7 +86,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResult<UserDto> queryByCondition(UserGetRequest request) {
+    public PageResult<UserDto> queryByCondition(UserQueryRequest request) {
 
         LambdaQueryWrapper<UserEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.like(!StrUtil.isEmpty(request.getUsername()),

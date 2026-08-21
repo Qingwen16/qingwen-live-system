@@ -10,8 +10,8 @@ import com.wen.common.response.PageResult;
 import com.wen.mapper.AddressMapper;
 import com.wen.model.entity.AddressEntity;
 import com.wen.model.vo.AddressIdRequest;
-import com.wen.model.vo.AddressGetRequest;
-import com.wen.model.vo.AddressAddRequest;
+import com.wen.model.vo.AddressQueryRequest;
+import com.wen.model.vo.AddressCreateRequest;
 import com.wen.service.AddressService;
 import com.wen.utils.UserInfoContext;
 import lombok.RequiredArgsConstructor;
@@ -48,7 +48,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void createAddress(AddressAddRequest request) {
+    public void createAddress(AddressCreateRequest request) {
         Long userId = UserInfoContext.getUserId();
         // 设置为默认地址时，先取消该用户其他默认地址
         cancelDefaultAddress(userId, request.getIsDefault());
@@ -68,7 +68,7 @@ public class AddressServiceImpl implements AddressService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateAddress(AddressAddRequest request) {
+    public void updateAddress(AddressCreateRequest request) {
         Long userId = UserInfoContext.getUserId();
         // 校验地址归属，防止越权修改他人地址
         AddressEntity address = addressMapper.selectById(request.getId());
@@ -104,7 +104,7 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public PageResult<AddressEntity> webQueryAddress(AddressGetRequest request) {
+    public PageResult<AddressEntity> webQueryAddress(AddressQueryRequest request) {
         long pageNum = request.getPageNum() < 1 ? 1 : request.getPageNum();
         long pageSize = request.getPageSize() < 1 ? 10 : request.getPageSize();
         pageSize = Math.min(pageSize, MAX_PAGE_SIZE);

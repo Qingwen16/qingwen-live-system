@@ -32,9 +32,9 @@ public class RoomEntity {
     private String title;
 
     /**
-     * 当前观看人数
+     * 直播状态 0-未开播 1-直播中 2-回放 3-关闭
      */
-    private Integer currentViewers;
+    private Integer status;
 
     /**
      * 累计直播时长(小时)
@@ -45,31 +45,6 @@ public class RoomEntity {
      * 累计收益
      */
     private BigDecimal totalIncome;
-
-    /**
-     * 直播状态 0-未开播 1-直播中 2-回放 3-关闭
-     */
-    private Integer status;
-
-    /**
-     * 推流地址
-     */
-    private String streamUrl;
-
-    /**
-     * 拉流地址
-     */
-    private String playUrl;
-
-    /**
-     * 开始直播时间
-     */
-    private Long startTime;
-
-    /**
-     * 结束直播时间
-     */
-    private Long endTime;
 
     /**
      * 是否删除 0-已删除 1-正常

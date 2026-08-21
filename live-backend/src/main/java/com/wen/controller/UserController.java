@@ -7,7 +7,7 @@ import com.wen.common.response.Response;
 import com.wen.model.dto.UserDto;
 import com.wen.model.vo.PhoneRequest;
 import com.wen.model.vo.UserIdRequest;
-import com.wen.model.vo.UserGetRequest;
+import com.wen.model.vo.UserQueryRequest;
 import com.wen.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +31,7 @@ public class UserController {
      * 根据条件查询用户列表
      */
     @PostMapping("/queryByCondition")
-    public Response<PageResult<UserDto>> queryByCondition(@Valid @RequestBody UserGetRequest request) {
+    public Response<PageResult<UserDto>> queryByCondition(@Valid @RequestBody UserQueryRequest request) {
         PageResult<UserDto> response = userService.queryByCondition(request);
         return Response.success(response);
     }

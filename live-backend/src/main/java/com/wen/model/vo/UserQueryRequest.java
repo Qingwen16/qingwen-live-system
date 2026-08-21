@@ -9,7 +9,7 @@ import lombok.Data;
  * @date : 2026-04-09
  */
 @Data
-public class UserGetRequest {
+public class UserQueryRequest {
 
     /**
      * 页码，从 1 开始

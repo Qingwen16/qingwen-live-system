@@ -9,15 +9,15 @@ import lombok.Data;
  * @author jwruan
  */
 @Data
-public class RoomGetRequest {
+public class RoomQueryRequest {
+
+    /**
+     * 直播间ID
+     */
+    private Long roomId;
 
     /**
      * 直播间标题（模糊匹配）
      */
     private String title;
-
-    /**
-     * 直播状态 {@link RoomStatusEnum}
-     */
-    private Integer status;
 }

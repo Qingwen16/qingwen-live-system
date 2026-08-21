@@ -16,7 +16,7 @@ import com.wen.model.entity.MessageEntity;
 import com.wen.model.entity.UserEntity;
 import com.wen.model.entity.UserRoom;
 import com.wen.model.dto.MessageDto;
-import com.wen.model.vo.MessageGetWebRequest;
+import com.wen.model.vo.MessageQueryWebRequest;
 import com.wen.model.vo.MessageIdRequest;
 import com.wen.model.vo.MessageSendRequest;
 import com.wen.service.MessageService;
@@ -98,7 +98,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public PageResult<MessageDto> getWebMessage(MessageGetWebRequest request) {
+    public PageResult<MessageDto> getWebMessage(MessageQueryWebRequest request) {
         LambdaQueryWrapper<MessageEntity> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(request.getRoomId() != null, MessageEntity::getRoomId, request.getRoomId())
                 .eq(request.getDeleted() != null, MessageEntity::getDeleted, request.getDeleted())

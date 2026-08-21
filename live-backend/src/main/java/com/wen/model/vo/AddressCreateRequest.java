@@ -13,7 +13,7 @@ import lombok.Data;
  * @date : 2026-04-09
  */
 @Data
-public class AddressAddRequest {
+public class AddressCreateRequest {
 
     /**
      * 地址ID（修改时必传）

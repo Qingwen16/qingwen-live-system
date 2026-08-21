@@ -5,7 +5,7 @@ import com.wen.common.enums.RoleTypeEnum;
 import com.wen.common.response.PageResult;
 import com.wen.common.response.Response;
 import com.wen.model.dto.RoleDto;
-import com.wen.model.vo.RoleGetRequest;
+import com.wen.model.vo.RoleQueryRequest;
 import com.wen.model.vo.RoleSetRequest;
 import com.wen.service.RoleService;
 import jakarta.validation.Valid;
@@ -31,7 +31,7 @@ public class RoleController {
      * 查询用户角色
      */
     @PostMapping("/query")
-    public Response<PageResult<RoleDto>> queryRole(@Valid @RequestBody RoleGetRequest request) {
+    public Response<PageResult<RoleDto>> queryRole(@Valid @RequestBody RoleQueryRequest request) {
         PageResult<RoleDto> response = roleService.queryRole(request);
         return Response.success(response);
     }

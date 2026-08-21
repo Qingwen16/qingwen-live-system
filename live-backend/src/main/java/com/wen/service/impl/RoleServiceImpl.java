@@ -11,7 +11,7 @@ import com.wen.common.response.PageResult;
 import com.wen.mapper.RoleMapper;
 import com.wen.model.dto.RoleDto;
 import com.wen.model.entity.RoleEntity;
-import com.wen.model.vo.RoleGetRequest;
+import com.wen.model.vo.RoleQueryRequest;
 import com.wen.service.CacheService;
 import com.wen.service.RoleService;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class RoleServiceImpl implements RoleService {
     private final CacheService cacheService;
 
     @Override
-    public PageResult<RoleDto> queryRole(RoleGetRequest request) {
+    public PageResult<RoleDto> queryRole(RoleQueryRequest request) {
         List<Integer> types = request.getTypes();
         log.info("分页查询用户角色信息, types={}, pageNum={}, pageSize={}", types,
                 request.getPageNum(), request.getPageSize());

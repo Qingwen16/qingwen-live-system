@@ -12,7 +12,7 @@ import java.util.List;
  * @author : rjw
  */
 @Data
-public class RoleGetRequest {
+public class RoleQueryRequest {
 
     /**
      * 页码，从 1 开始

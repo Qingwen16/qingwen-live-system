@@ -8,7 +8,7 @@ import java.math.BigDecimal;
  * 修改商品请求（状态与销量由上下架/下单系统维护，不在本请求中修改）
  */
 @Data
-public class GoodUdtRequest {
+public class GoodUpdateRequest {
 
     /**
      * 货物ID

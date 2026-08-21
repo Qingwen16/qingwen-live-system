@@ -1,10 +1,7 @@
 package com.wen.service;
 
 import com.wen.model.dto.RoomDto;
-import com.wen.model.vo.RoomIdRequest;
-import com.wen.model.vo.RoomOnlineCountVo;
-import com.wen.model.vo.RoomGetRequest;
-import com.wen.model.vo.RoomRequest;
+import com.wen.model.vo.*;
 
 import java.util.List;
 
@@ -18,17 +15,17 @@ public interface RoomService {
     /**
      * 创建直播间（一个主播只能创建一个直播间）
      */
-    RoomDto createRoom(RoomRequest request);
+    void createRoom(RoomCreateRequest request);
 
     /**
      * 更新直播间信息（主播只能更新自己的直播间）
      */
-    void updateRoom(RoomRequest request);
+    void updateRoom(RoomUpdateRequest request);
 
     /**
      * 删除直播间（主播只能删除自己的直播间）
      */
-    void deleteRoom(RoomRequest request);
+    void deleteRoom(RoomIdRequest request);
 
     /**
      * 开启直播间（主播开启自己的直播间，管理员可开启任意直播间）
@@ -43,25 +40,11 @@ public interface RoomService {
     /**
      * 查询直播间列表（全量）
      */
-    List<RoomDto> getRoomList(RoomGetRequest request);
+    List<RoomDto> queryRoomList(RoomQueryRequest request);
 
     /**
-     * 查询直播间详情
+     * Web查询直播间列表（全量）
      */
-    RoomDto getRoomInfo(RoomIdRequest request);
+    List<RoomDto> queryRoomListWeb(RoomQueryWebRequest request);
 
-    /**
-     * 进入直播间（在线人数 +1）
-     */
-    void incrementViewers(Long roomId);
-
-    /**
-     * 离开直播间（在线人数 -1）
-     */
-    void decrementViewers(Long roomId);
-
-    /**
-     * 查询所有直播间在线人数（轻量，仅返回 roomId + currentViewers，供前端轮询）
-     */
-    List<RoomOnlineCountVo> getOnlineCounts();
 }

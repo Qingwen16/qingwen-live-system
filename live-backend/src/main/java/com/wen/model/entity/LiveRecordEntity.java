@@ -17,7 +17,7 @@ public class LiveRecordEntity {
     /**
      * 记录 ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
     /**
@@ -28,17 +28,12 @@ public class LiveRecordEntity {
     /**
      * 主播 ID
      */
-    private Long anchorId;
+    private Long userId;
 
     /**
      * 直播标题
      */
     private String title;
-
-    /**
-     * 直播封面
-     */
-    private String coverImage;
 
     /**
      * 开始时间
@@ -66,19 +61,9 @@ public class LiveRecordEntity {
     private Long totalViewers;
 
     /**
-     * 收到礼物价值
-     */
-    private Long totalGiftValue;
-
-    /**
      * 弹幕数量
      */
     private Integer messageCount;
-
-    /**
-     * 点赞数量
-     */
-    private Long likeCount;
 
     /**
      * 回放视频 URL

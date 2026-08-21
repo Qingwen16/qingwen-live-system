@@ -2,7 +2,7 @@ package com.wen.service;
 
 import com.wen.common.response.PageResult;
 import com.wen.model.dto.MessageDto;
-import com.wen.model.vo.MessageGetWebRequest;
+import com.wen.model.vo.MessageQueryWebRequest;
 import com.wen.model.vo.MessageIdRequest;
 import com.wen.model.vo.MessageSendRequest;
 
@@ -28,7 +28,7 @@ public interface MessageService {
     /**
      * 后台管理分页查询直播间消息（含已删除，超管专用）
      */
-    PageResult<MessageDto> getWebMessage(MessageGetWebRequest request);
+    PageResult<MessageDto> getWebMessage(MessageQueryWebRequest request);
 
     /**
      * 删除弹幕（逻辑删除，主播仅限自己直播间，管理员/超管任意），返回被删消息所在直播间 ID

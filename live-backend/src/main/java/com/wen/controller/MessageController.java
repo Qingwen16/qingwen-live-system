@@ -6,9 +6,9 @@ import com.wen.common.response.PageResult;
 import com.wen.common.response.Response;
 import com.wen.model.dto.ChatDeleteEvent;
 import com.wen.model.dto.MessageDto;
-import com.wen.model.vo.MessageGetWebRequest;
+import com.wen.model.vo.MessageQueryWebRequest;
 import com.wen.model.vo.MessageIdRequest;
-import com.wen.model.vo.MessageGetRequest;
+import com.wen.model.vo.MessageQueryRequest;
 import com.wen.model.vo.MessageSendRequest;
 import com.wen.service.MessageService;
 import jakarta.validation.Valid;
@@ -51,7 +51,7 @@ public class MessageController {
      * 查询直播间历史消息
      */
     @PostMapping("/room/get")
-    public Response<List<MessageDto>> getRoomMessage(@Valid @RequestBody MessageGetRequest request) {
+    public Response<List<MessageDto>> getRoomMessage(@Valid @RequestBody MessageQueryRequest request) {
         return Response.success(messageService.getRoomMessage(request.getRoomId(), request.getLimit()));
     }
 
@@ -60,7 +60,7 @@ public class MessageController {
      */
     @PostMapping("/web/get")
     @RequireRole({RoleTypeEnum.SUPER_ADMIN})
-    public Response<PageResult<MessageDto>> getWebMessage(@Valid @RequestBody MessageGetWebRequest request) {
+    public Response<PageResult<MessageDto>> getWebMessage(@Valid @RequestBody MessageQueryWebRequest request) {
         return Response.success(messageService.getWebMessage(request));
     }
 
